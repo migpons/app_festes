@@ -1,0 +1,711 @@
+/* =========================================================
+   RESPONSIVE.CSS
+   PARTE 1
+   Mobile First
+========================================================= */
+
+
+/* =========================================================
+   MÓVILES
+   hasta 767 px
+========================================================= */
+
+@media (max-width:767px){
+
+    html{
+
+        font-size:16px;
+
+    }
+
+    body{
+
+        overflow-x:hidden;
+
+    }
+
+    /* ==========================
+       HERO
+    ========================== */
+
+    #hero{
+
+        height:220px;
+
+    }
+
+    .hero-overlay{
+
+        padding:15px;
+
+    }
+
+    .logo{
+
+    width:var(--logo-movil);
+
+    height:auto;
+
+    max-width:95%;
+
+	}
+
+    #tituloWeb{
+
+        font-size:1.6rem;
+        line-height:1.2;
+
+    }
+
+    #subtituloWeb{
+
+        font-size:1rem;
+        margin-top:8px;
+
+    }
+
+
+    /* ==========================
+       BARRA SUPERIOR
+    ========================== */
+
+    .barraSuperior{
+
+        display:flex;
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        gap:12px;
+
+        padding:15px;
+
+    }
+
+    #anioFiestas{
+
+        text-align:center;
+
+        font-size:1rem;
+
+    }
+
+    #contadorActo{
+
+        text-align:center;
+
+        font-size:.95rem;
+
+        line-height:1.4;
+
+    }
+
+    #buscador{
+
+        width:100%;
+
+        font-size:16px;
+
+        padding:14px;
+
+    }
+
+
+    /* ==========================
+       CONTENEDOR
+    ========================== */
+
+    .contenedor{
+
+        display:flex;
+
+        flex-direction:column;
+
+        min-height:auto;
+
+    }
+
+
+    /* ==========================
+       MENÚ
+    ========================== */
+
+    #menu{
+
+        width:100%;
+
+        border-right:none;
+
+        border-bottom:1px solid #ddd;
+
+        padding:15px;
+
+        display:flex;
+
+        gap:10px;
+
+        overflow-x:auto;
+
+        overflow-y:hidden;
+
+        white-space:nowrap;
+
+        scroll-snap-type:x mandatory;
+		
+		scroll-padding-inline:15px;
+ 
+    }
+
+    #menu::-webkit-scrollbar{
+
+        height:6px;
+
+    }
+
+    .menu-dia{
+
+    min-width:150px;
+
+    max-width:150px;
+
+    margin:0;
+
+    flex-shrink:0;
+
+    scroll-snap-align:start;
+
+    padding:12px;
+
+    border-radius:14px;
+
+	}
+
+	.menu-dia:first-child{
+
+		margin-left:20px;
+
+	}
+
+	.menu-dia:last-child{
+
+		margin-right:20px;
+
+	}
+
+    .menu-dia-texto{
+
+		font-size:.88rem;
+
+		line-height:1.2;
+		
+		white-space:nowrap;
+
+		overflow:hidden;
+
+		text-overflow:ellipsis;
+
+	}
+	
+	.menu-dia-numero{
+
+		width:34px;
+
+		height:34px;
+
+		line-height:34px;
+
+		font-size:.95rem;
+
+	}
+
+    .menu-dia-actos{
+
+        font-size:.80rem;
+
+    }
+
+
+    /* ==========================
+       CONTENIDO
+    ========================== */
+
+    #contenido{
+
+        padding:18px;
+
+    }
+
+    .titulo-dia{
+
+        font-size:1.5rem;
+
+    }
+
+    .descripcion-dia{
+
+        font-size:.95rem;
+
+        margin-bottom:20px;
+
+    }
+
+}
+
+/* =========================================================
+   RESPONSIVE.CSS
+   PARTE 2
+   Tarjetas + Tablet
+========================================================= */
+
+
+/* =========================================================
+   TARJETAS EN MÓVIL
+========================================================= */
+
+@media (max-width:767px){
+
+    .tarjeta{
+
+        padding:18px;
+
+        margin-bottom:18px;
+
+        border-radius:12px;
+
+    }
+
+    .tarjeta-cabecera{
+
+        display:flex;
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:10px;
+
+    }
+
+    .categoria{
+
+        font-size:.85rem;
+
+        padding:6px 12px;
+
+    }
+
+    .hora{
+
+        font-size:1.1rem;
+
+    }
+
+    .tarjeta h3{
+
+        font-size:1.25rem;
+
+        line-height:1.3;
+
+    }
+
+    .tarjeta p{
+
+        font-size:.95rem;
+
+        line-height:1.5;
+
+    }
+
+    .imagen-acto{
+
+        width:100%;
+
+        height:auto;
+
+        border-radius:10px;
+
+        margin:15px 0;
+
+        object-fit:cover;
+
+    }
+
+    .datos{
+
+        display:flex;
+
+        flex-direction:column;
+
+        gap:10px;
+
+        margin-top:15px;
+
+    }
+
+    .datos div{
+
+        width:100%;
+
+        word-break:break-word;
+
+    }
+
+    .etiquetas{
+
+        gap:8px;
+
+    }
+
+    .etiqueta{
+
+        font-size:.78rem;
+
+        padding:6px 10px;
+
+    }
+
+    .sin-actos{
+
+        padding:30px 20px;
+
+        font-size:1rem;
+
+    }
+	
+}
+
+
+/* =========================================================
+   TABLETS
+   768 - 1023 px
+========================================================= */
+
+@media (min-width:768px) and (max-width:1023px){
+
+    #hero{
+
+        height:260px;
+
+    }
+
+    .logo{
+
+    width:var(--logo-tablet);
+
+    height:auto;
+
+    max-width:90%;
+
+	}
+
+    #tituloWeb{
+
+        font-size:2rem;
+
+    }
+
+    .barraSuperior{
+
+        padding:18px;
+
+        gap:15px;
+
+        flex-wrap:wrap;
+
+    }
+
+    #buscador{
+
+        width:280px;
+
+    }
+
+    .contenedor{
+
+        display:flex;
+
+    }
+
+    #menu{
+
+        width:240px;
+
+        padding:18px;
+		
+		scroll-behavior:smooth;
+
+		-webkit-overflow-scrolling:touch;
+
+    }
+
+    #contenido{
+
+        padding:25px;
+
+    }
+
+    .tarjeta{
+
+        padding:22px;
+
+    }
+
+    .tarjeta h3{
+
+        font-size:1.35rem;
+
+    }
+
+    .datos{
+
+        gap:15px;
+
+    }
+
+}
+
+/* =========================================================
+   RESPONSIVE.CSS
+   PARTE 3
+   Escritorio + Ajustes finales
+========================================================= */
+
+
+/* =========================================================
+   ESCRITORIO
+   A partir de 1024 px
+========================================================= */
+
+@media (min-width:1024px){
+
+    .contenedor{
+
+        display:grid;
+
+        grid-template-columns:300px 1fr;
+
+        gap:0;
+
+        align-items:start;
+
+    }
+
+    #menu{
+
+        position:sticky;
+
+        top:0;
+
+        height:calc(100vh - 80px);
+
+        overflow-y:auto;
+
+    }
+
+    #contenido{
+
+        min-width:0;
+
+        padding:35px;
+
+    }
+
+    .tarjeta{
+
+        transition:
+            transform .20s ease,
+            box-shadow .20s ease;
+
+    }
+
+    .tarjeta:hover{
+
+        transform:translateY(-4px);
+
+    }
+
+}
+
+
+/* =========================================================
+   IMÁGENES
+========================================================= */
+
+img{
+
+    max-width:100%;
+
+    height:auto;
+
+    display:block;
+
+}
+
+
+/* =========================================================
+   ENLACES
+========================================================= */
+
+a{
+
+    word-break:break-word;
+
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+button{
+
+    min-height:44px;
+
+    cursor:pointer;
+
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+input,
+select,
+textarea{
+
+    max-width:100%;
+
+    font:inherit;
+
+}
+
+
+/* =========================================================
+   TABLAS
+========================================================= */
+
+table{
+
+    width:100%;
+
+    display:block;
+
+    overflow-x:auto;
+
+}
+
+
+/* =========================================================
+   VÍDEOS
+========================================================= */
+
+iframe,
+video{
+
+    width:100%;
+
+    height:auto;
+
+}
+
+
+/* =========================================================
+   PREVENIR DESBORDAMIENTOS
+========================================================= */
+
+*{
+
+    box-sizing:border-box;
+
+    min-width:0;
+
+}
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+
+/* =========================================================
+   ORIENTACIÓN HORIZONTAL EN MÓVIL
+========================================================= */
+
+@media (max-width:767px) and (orientation:landscape){
+
+    #hero{
+
+        height:170px;
+
+    }
+
+    .barraSuperior{
+
+        padding:12px;
+
+    }
+
+}
+
+
+/* =========================================================
+   PANTALLAS MUY PEQUEÑAS
+========================================================= */
+
+@media (max-width:360px){
+
+    html{
+
+        font-size:15px;
+
+    }
+
+    .menu-dia{
+
+        min-width:150px;
+
+    }
+
+    .tarjeta{
+
+        padding:15px;
+
+    }
+
+    .tarjeta h3{
+
+        font-size:1.10rem;
+
+    }
+
+}
+
+
+/* =========================================================
+   PANTALLAS MUY GRANDES
+========================================================= */
+
+@media (min-width:1600px){
+
+    .contenedor{
+
+        max-width:1600px;
+
+        margin:auto;
+
+    }
+
+}
+
+
+/* =========================================================
+   FIN
+========================================================= */

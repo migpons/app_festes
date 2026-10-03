@@ -1,0 +1,88 @@
+:root{
+
+    /* ==========================
+       COLORES DEL TEMA
+       (Se sustituirán desde programa.json)
+    ========================== */
+
+    --color-principal:#8B0000;
+
+    --color-secundario:#C9A227;
+
+    --color-fondo:#F5F5F5;
+
+    --color-superficie:#FFFFFF;
+
+    --color-texto:#222222;
+
+    --color-texto-claro:#666666;
+
+    --color-borde:#DDDDDD;
+
+
+    /* ==========================
+       COLORES DE CATEGORÍAS
+    ========================== */
+
+    --cat-religioso:#6A1B9A;
+
+    --cat-toros:#C62828;
+
+    --cat-musica:#1565C0;
+
+    --cat-gastronomia:#EF6C00;
+
+    --cat-infantil:#43A047;
+
+    --cat-cultural:#6D4C41;
+
+    --cat-deporte:#00897B;
+
+    --cat-fuegos:#8E24AA;
+
+    --cat-tradicion:#795548;
+
+    --cat-otros:#607D8B;
+
+
+    /* ==========================
+       SOMBRAS
+    ========================== */
+
+    --sombra-suave:0 3px 10px rgba(0,0,0,.10);
+
+    --sombra-media:0 8px 25px rgba(0,0,0,.15);
+
+
+    /* ==========================
+       BORDES
+    ========================== */
+
+    --radio:12px;
+
+    --radio-grande:20px;
+
+
+    /* ==========================
+       TRANSICIONES
+    ========================== */
+
+    --transicion:.25s;
+
+
+    /* ==========================
+       MEDIDAS
+    ========================== */
+
+    --ancho-menu:280px;
+
+    --max-contenido:1400px;
+
+
+    /* ==========================
+       TIPOGRAFÍA
+    ========================== */
+
+    --fuente:'Montserrat',sans-serif;
+
+}
