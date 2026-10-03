@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Sin conexión</title>
+
+    <style>
+
+        *{
+
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+
+        }
+
+        body{
+
+            font-family:Montserrat,Arial,sans-serif;
+
+            background:#f5f5f5;
+
+            display:flex;
+
+            justify-content:center;
+
+            align-items:center;
+
+            min-height:100vh;
+
+            padding:25px;
+
+        }
+
+        .contenedor{
+
+            background:white;
+
+            padding:40px;
+
+            border-radius:18px;
+
+            max-width:500px;
+
+            text-align:center;
+
+            box-shadow:0 8px 30px rgba(0,0,0,.15);
+
+        }
+
+        h1{
+
+            color:#b30000;
+
+            margin-bottom:20px;
+
+        }
+
+        p{
+
+            color:#555;
+
+            line-height:1.7;
+
+            margin-bottom:18px;
+
+        }
+
+        button{
+
+            margin-top:15px;
+
+            background:#b30000;
+
+            color:white;
+
+            border:none;
+
+            padding:14px 28px;
+
+            border-radius:10px;
+
+            cursor:pointer;
+
+            font-size:16px;
+
+        }
+
+        button:hover{
+
+            background:#8e0000;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+<h1>📡 Sin conexión</h1>
+
+<p>
+
+No hay conexión a Internet en este momento.
+
+</p>
+
+<p>
+
+Si ya habías abierto anteriormente la aplicación,
+gran parte del programa seguirá estando disponible.
+
+</p>
+
+<button onclick="location.reload()">
+
+Reintentar
+
+</button>
+
+</div>
+
+</body>
+
+</html>

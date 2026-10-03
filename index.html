@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Festes Vilafranca</title>
+
+    <meta name="description"
+        content="Programa Oficial de las Fiestas Patronales">
+
+    <meta name="theme-color"
+        content="#8B0000">
+
+    <link
+		id="favicon"
+		rel="icon"
+		href="favicon.ico">
+
+    <!-- Google Fonts -->
+
+    <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+        href="css/variables.css?3">
+
+    <link rel="stylesheet"
+        href="css/estilos.css?36">
+
+    <link rel="stylesheet"
+        href="css/responsive.css?26">
+
+
+
+</head>
+
+<body>
+
+    <!-- CABECERA -->
+
+    <header id="hero">
+
+        <div class="hero-overlay">
+
+            <img id="logo"
+                class="logo"
+                src=""
+                alt="Logo">
+
+            <div class="titulos">
+
+                <h1 id="tituloWeb">
+                    Cargando...
+                </h1>
+
+                <h2 id="subtituloWeb">
+                </h2>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- BARRA SUPERIOR -->
+
+    <section class="barraSuperior">
+
+    <div id="anioFiestas"></div>
+
+		<input
+			type="search"
+			id="buscador"
+			placeholder="Buscar actos...">
+
+		<button
+			id="botonFavoritos"
+			class="boton">
+			❤️ Mis favoritos
+		</button>
+
+    <div id="contadorActo">
+        Cargando programa...
+    </div>
+
+	</section>
+
+    <!-- CONTENIDO -->
+
+    <div class="contenedor">
+
+        <!-- MENÚ -->
+
+        <aside id="menu">
+
+        </aside>
+
+        <!-- CONTENIDO -->
+
+        <main id="contenido">
+
+            <div class="loader">
+
+                Cargando programa...
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- PIE -->
+
+    <footer>
+
+        <p id="copyright"></p>
+
+    </footer>
+
+    <!-- JAVASCRIPT -->
+
+    <script src="js/helpers.js?30"></script>
+	
+	<script src="js/favoritos.js?4"></script>
+
+    <script src="js/programa.js?12"></script>
+
+    <script src="js/menu.js?20"></script>
+
+    <script src="js/tarjetas.js?17"></script>
+
+    <script src="js/app.js?26"></script>
+
+
+<script>
+
+if ("serviceWorker" in navigator) {
+
+    navigator.serviceWorker.getRegistrations()
+
+    .then(registrations => {
+
+        registrations.forEach(registration => {
+
+            registration.unregister();
+
+        });
+
+    });
+
+}
+
+</script>
+
+</body>
+
+</html>
