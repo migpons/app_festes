@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "programaPredeterminado": "iglesuela-2026",
+  "programas": [
+    {
+      "id": "iglesuela-2026",
+      "nombre": "Iglesuela del Cid",
+      "anio": 2026,
+      "archivo": "data/programa.json",
+      "icono": "img/icon-iglesuela.png",
+      "activo": true
+    },
+    {
+      "id": "vilafranca-2026",
+      "nombre": "Villafranca del Cid",
+      "anio": 2026,
+      "archivo": "data/programa_vilafranca_26.json",
+      "icono": "img/icon-192.png",
+      "activo": true
+    },
+    {
+      "id": "castellfort-2026",
+      "nombre": "Castellfort",
+      "anio": 2026,
+      "archivo": "data/programa_castellfort_26.json",
+      "icono": "img/icon-castellfort.png",
+      "activo": true
+    }
+  ]
+}

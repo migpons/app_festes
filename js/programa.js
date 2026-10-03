@@ -15,12 +15,12 @@ CARGAR PROGRAMA
 =========================================================
 */
 
-async function cargarPrograma() {
+async function cargarPrograma(ruta = "data/programa.json") {
 
-    const respuesta = await fetch("data/programa.json");
+    const respuesta = await fetch(ruta);
 
     if (!respuesta.ok) {
-        throw new Error("No se ha encontrado data/programa.json");
+        throw new Error(`No se ha encontrado ${ruta}`);
     }
 
     programa = await respuesta.json();

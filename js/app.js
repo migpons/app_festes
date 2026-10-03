@@ -31,8 +31,11 @@ async function iniciarAplicacion() {
 
     try {
 
+        // Resolver el programa que se debe mostrar
+        const programaActivo = await prepararSelectorProgramas();
+
         // Cargar programa
-        await cargarPrograma();
+        await cargarPrograma(programaActivo.archivo);
 
         // Aplicar colores
         aplicarTema();
@@ -42,6 +45,9 @@ async function iniciarAplicacion() {
 
         // Cabecera
         cargarCabecera();
+
+        // Selector de programas
+        crearSelectorProgramas();
 
         // Crear menú
         crearMenu();

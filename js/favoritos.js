@@ -11,10 +11,54 @@ favoritos.js
 OBTENER FAVORITOS
 =========================================================*/
 
+function obtenerClaveFavoritos(){
+
+    const idPrograma =
+        typeof obtenerIdProgramaSeleccionado === "function"
+            ? obtenerIdProgramaSeleccionado()
+            : null;
+
+    return idPrograma
+        ? `favoritos_${idPrograma}`
+        : "favoritos";
+
+}
+
+function migrarFavoritosAnteriores(claveActual){
+
+    if (claveActual === "favoritos") return;
+
+    const programaActivo =
+        typeof obtenerProgramaSeleccionadoInfo === "function"
+            ? obtenerProgramaSeleccionadoInfo()
+            : null;
+
+    if (
+        !programaActivo ||
+        programaActivo.archivo !== "data/programa.json"
+    ) {
+        return;
+    }
+
+    if (localStorage.getItem(claveActual) !== null) return;
+
+    const favoritosAnteriores =
+        localStorage.getItem("favoritos");
+
+    if (favoritosAnteriores !== null) {
+        localStorage.setItem(claveActual, favoritosAnteriores);
+    }
+
+}
+
 function obtenerFavoritos(){
 
+    const clave = obtenerClaveFavoritos();
+
+    migrarFavoritosAnteriores(clave);
+
     return JSON.parse(
-        localStorage.getItem("favoritos") || "[]"
+        localStorage.getItem(clave) || "[]"
     );
 
 }
@@ -26,7 +70,7 @@ GUARDAR FAVORITOS
 function guardarFavoritos(lista){
 
     localStorage.setItem(
-        "favoritos",
+        obtenerClaveFavoritos(),
         JSON.stringify(lista)
     );
 
