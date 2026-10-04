@@ -14,7 +14,7 @@
       "id": "iglesuela-2026",
       "nombre": "Iglesuela del Cid",
       "anio": 2026,
-      "archivo": "data/programa.json",
+      "archivo": "data/programa_iglesuela_26.json",
       "icono": "img/icon-iglesuela.png",
       "activo": true
     },
