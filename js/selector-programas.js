@@ -317,6 +317,8 @@ function insertarDatosPrograma(elemento, programaMenu, mostrarFlecha) {
 
     const icono = document.createElement("img");
     icono.className = "selector-programas-icono";
+    icono.width = 32;
+    icono.height = 32;
     icono.src = programaMenu.icono || "img/icon-192.png";
     icono.alt = "";
     icono.setAttribute("aria-hidden", "true");
