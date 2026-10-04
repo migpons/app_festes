@@ -28,9 +28,9 @@
     },
     {
       "id": "4",
-      "nombre": "Castellfort",
+      "nombre": "Test",
       "anio": 2026,
-      "archivo": "data/programa_castellfort_26.json",
+      "archivo": "data/programa.json",
       "icono": "img/icon-castellfort.png",
       "activo": true
     }
