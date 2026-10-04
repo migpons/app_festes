@@ -88,14 +88,43 @@ function actualizarMenu(indiceSeleccionado) {
     });
 
     const botonActivo = botones[indiceSeleccionado];
+    const menu = document.getElementById("menu");
 
-    if (botonActivo) {
+    if (botonActivo && menu) {
 
-        botonActivo.scrollIntoView({
-            behavior: "smooth",
-            block: "nearest",
-            inline: "center"
-        });
+        /*
+        Desplazar solo el contenedor del menu.
+        scrollIntoView() puede mover tambien la pagina completa y ocultar
+        la barra global de seleccion de programa al iniciar la aplicacion.
+        */
+
+        const rectMenu = menu.getBoundingClientRect();
+        const rectBoton = botonActivo.getBoundingClientRect();
+
+        if (window.innerWidth < 768) {
+
+            const desplazamientoHorizontal =
+                rectBoton.left - rectMenu.left -
+                ((menu.clientWidth - rectBoton.width) / 2);
+
+            menu.scrollTo({
+                left: menu.scrollLeft + desplazamientoHorizontal,
+                behavior: "smooth"
+            });
+
+        }
+        else {
+
+            const desplazamientoVertical =
+                rectBoton.top - rectMenu.top -
+                ((menu.clientHeight - rectBoton.height) / 2);
+
+            menu.scrollTo({
+                top: menu.scrollTop + desplazamientoVertical,
+                behavior: "smooth"
+            });
+
+        }
 
     }
 

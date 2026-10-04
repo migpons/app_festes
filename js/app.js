@@ -10,6 +10,16 @@ Inicialización de la aplicación
 "use strict";
 
 /*=========================================================
+POSICION INICIAL DE LA PAGINA
+=========================================================*/
+
+// Evita que el navegador restaure una posicion de scroll anterior
+// al recargar o cambiar de programa.
+if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+}
+
+/*=========================================================
 VARIABLES GLOBALES
 =========================================================*/
 
@@ -28,6 +38,9 @@ FUNCIÓN PRINCIPAL
 =========================================================*/
 
 async function iniciarAplicacion() {
+
+    // La barra global de seleccion debe ser visible al entrar.
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 
     try {
 
@@ -66,6 +79,13 @@ async function iniciarAplicacion() {
 
 	// Actualizar contador
 	actualizarBotonFavoritos();
+
+        // Algunos navegadores moviles intentan restaurar el scroll despues
+        // de terminar de construir el contenido. Reafirmamos el inicio una
+        // vez que la interfaz ya esta lista.
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        });
 
     }
 
