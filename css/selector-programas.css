@@ -1,11 +1,37 @@
 /* =========================================================
-   SELECTOR DE PROGRAMAS
-   Hoja independiente para evitar conflictos/caché
+   BARRA GLOBAL + SELECTOR DE PROGRAMAS
+   Componente independiente de los colores de cada municipio.
 ========================================================= */
+
+/* Barra de nivel aplicacion: siempre neutra */
+.barraAplicacion {
+    background: #f3f4f6;
+    border-bottom: 1px solid #d7dbe0;
+    color: #2f343b;
+    padding: 11px 24px;
+}
+
+.barraAplicacion-contenido {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+}
+
+.barraAplicacion-etiqueta {
+    flex: 0 0 auto;
+    font-size: .88rem;
+    font-weight: 700;
+    letter-spacing: .01em;
+    color: #4b5159;
+}
 
 .selector-programas {
     position: relative;
-    width: 250px;
+    width: 270px;
     flex: 0 0 auto;
     z-index: 50;
 }
@@ -22,28 +48,30 @@
 }
 
 .selector-programas-boton {
-    min-height: 46px;
-    padding: 7px 10px;
+    min-height: 44px;
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
     border-radius: 9px;
     background: #fff;
     color: #222;
-    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    cursor: pointer;
 }
 
 .selector-programas-boton:hover {
-    background: #f7f7f7;
+    background: #fafafa;
+    border-color: #b8bec6;
 }
 
 .selector-programas-boton:focus-visible,
 .selector-programas-opcion:focus-visible {
-    outline: 3px solid rgba(255,255,255,.55);
+    outline: 3px solid rgba(75,81,89,.30);
     outline-offset: 2px;
 }
 
 /*
-   Tamaño explícito + max/min para que ninguna regla global de imágenes
-   pueda hacer crecer el icono. Los atributos width/height del JS son
-   además un segundo nivel de protección si este CSS tarda en cargar.
+   Tamano explicito para que ninguna regla global de imagenes
+   pueda ampliar los iconos en GitHub Pages u otros servidores.
 */
 .selector-programas .selector-programas-icono {
     width: 32px;
@@ -99,6 +127,7 @@
     left: 0;
     width: 100%;
     padding: 6px;
+    border: 1px solid #d7dbe0;
     border-radius: 10px;
     background: #fff;
     box-shadow: 0 10px 30px rgba(0,0,0,.20);
@@ -120,11 +149,12 @@
 }
 
 .selector-programas-opcion:hover {
-    background: #f1f1f1;
+    background: #f1f2f4;
 }
 
+/* La seleccion tambien es neutra: no hereda el color del municipio */
 .selector-programas-opcion.activo {
-    background: var(--color-principal);
+    background: #4b5159;
     color: #fff;
 }
 
@@ -133,10 +163,24 @@
 }
 
 .selector-programas-opcion.activo:hover {
-    background: var(--color-secundario);
+    background: #3d4249;
 }
 
 @media (max-width: 767px) {
+    .barraAplicacion {
+        padding: 10px 15px 12px;
+    }
+
+    .barraAplicacion-contenido {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 7px;
+    }
+
+    .barraAplicacion-etiqueta {
+        font-size: .82rem;
+    }
+
     .selector-programas {
         width: 100%;
     }
@@ -146,13 +190,18 @@
     }
 
     .selector-programas-lista {
-        position: static;
-        margin-top: 8px;
+        position: absolute;
+        margin-top: 0;
     }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
+    .barraAplicacion {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
     .selector-programas {
-        width: 240px;
+        width: 255px;
     }
 }
