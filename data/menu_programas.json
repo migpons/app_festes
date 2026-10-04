@@ -32,7 +32,7 @@
       "anio": 2026,
       "archivo": "data/programa.json",
       "icono": "img/icon-castellfort.png",
-      "activo": true
+      "activo": false
     }
   ]
 }
