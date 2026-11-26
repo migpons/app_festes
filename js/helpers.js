@@ -1,391 +1,139 @@
-/*
-=========================================================
-Fiestas Villafranca
-helpers.js
-
-Funciones auxiliares comunes
-Versión 1.0
-=========================================================
-*/
-
 "use strict";
 
-/*=========================================================
-SELECTORES
-=========================================================*/
-
-function $(selector) {
-    return document.querySelector(selector);
-}
-
-function $$(selector) {
-    return document.querySelectorAll(selector);
-}
-
-/*=========================================================
-CREAR ELEMENTOS
-=========================================================*/
-
+function $(selector) { return document.querySelector(selector); }
+function $$(selector) { return document.querySelectorAll(selector); }
 function crearElemento(tag, clase = "", texto = "") {
-
     const elemento = document.createElement(tag);
-
-    if (clase) {
-        elemento.className = clase;
-    }
-
-    if (texto) {
-        elemento.textContent = texto;
-    }
-
+    if (clase) elemento.className = clase;
+    if (texto !== "" && texto != null) elemento.textContent = String(texto);
     return elemento;
-
 }
-
-/*=========================================================
-VACIAR CONTENEDOR
-=========================================================*/
-
-function vaciar(elemento) {
-
-    while (elemento.firstChild) {
-        elemento.removeChild(elemento.firstChild);
-    }
-
+function vaciar(elemento) { elemento.replaceChildren(); }
+function fechaValida(texto) {
+    if (typeof texto !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(texto)) return false;
+    const fecha = new Date(texto + "T12:00:00Z");
+    return !Number.isNaN(fecha.getTime()) && fecha.toISOString().slice(0, 10) === texto;
 }
-
-/*=========================================================
-FORMATEAR FECHA
-Recibe: 2026-08-14
-Devuelve: Viernes 14 de Agosto
-=========================================================*/
-
-function formatearFecha(fechaTexto) {
-
-    const dias = [
-        "Domingo",
-        "Lunes",
-        "Martes",
-        "Miércoles",
-        "Jueves",
-        "Viernes",
-        "Sábado"
-    ];
-
-    const meses = [
-        "Enero",
-        "Febrero",
-        "Marzo",
-        "Abril",
-        "Mayo",
-        "Junio",
-        "Julio",
-        "Agosto",
-        "Septiembre",
-        "Octubre",
-        "Noviembre",
-        "Diciembre"
-    ];
-
-    const fecha = new Date(fechaTexto + "T12:00:00");
-
-    return `${dias[fecha.getDay()]} ${fecha.getDate()} de ${meses[fecha.getMonth()]}`;
-
-}
-
-/*=========================================================
-CONVERTIR HORA A MINUTOS
-=========================================================*/
-
-function horaMinutos(hora) {
-
-    if (!hora) return 0;
-
-    const partes = hora.split(":");
-
-    return parseInt(partes[0]) * 60 + parseInt(partes[1]);
-
-}
-
-/*=========================================================
-ORDENAR ACTOS
-=========================================================*/
-
-function ordenarActos(actos){
-
-    return actos.sort((a,b)=>{
-
-        return obtenerHoraOrdenacion(a.hora)
-             - obtenerHoraOrdenacion(b.hora);
-
+function formatearFecha(texto) {
+    return new Date(texto + "T12:00:00Z").toLocaleDateString("es-ES", {
+        timeZone: "UTC", weekday: "long", day: "numeric", month: "long"
     });
-
 }
-
-/*=========================================================
-APLICAR COLORES
-=========================================================*/
-
+function horaMinutos(hora) {
+    if (typeof hora !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)) return null;
+    const [h, m] = hora.split(":").map(Number);
+    return h * 60 + m;
+}
+function minutosCambioDia(config = programa?.config) {
+    return horaMinutos(config?.horaCambioDia ?? config?.municipio?.horaCambioDia ?? "06:00") ?? 360;
+}
+function obtenerHoraOrdenacion(hora, config = programa?.config) {
+    const minutos = horaMinutos(hora);
+    if (minutos === null) return Infinity;
+    return minutos < minutosCambioDia(config) ? minutos + 1440 : minutos;
+}
+function perteneceNocheAnterior(hora) {
+    const minutos = horaMinutos(hora);
+    return minutos !== null && minutos < minutosCambioDia();
+}
+function normalizarTexto(texto) {
+    return String(texto ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+function ordenarActos(actos, config = programa?.config) {
+    let anterior = minutosCambioDia(config);
+    const ordenados = actos.map((acto, indice) => {
+        let orden = obtenerHoraOrdenacion(acto.horaOrden ?? acto.hora, config);
+        if (!Number.isFinite(orden)) {
+            const texto = normalizarTexto(acto.hora);
+            // Son posiciones de ordenación, nunca horas anunciadas como exactas.
+            if (texto.includes("por la manana")) orden = Math.max(minutosCambioDia(config), 360);
+            else if (texto.includes("por la tarde")) orden = 12 * 60;
+            else orden = anterior + 0.001;
+        }
+        anterior = orden;
+        return { acto, orden, indice };
+    }).sort((a, b) => a.orden - b.orden || a.indice - b.indice);
+    actos.splice(0, actos.length, ...ordenados.map(item => item.acto));
+    return actos;
+}
+function sumarDias(fecha, cantidad) {
+    const dia = new Date(fecha + "T12:00:00Z");
+    dia.setUTCDate(dia.getUTCDate() + cantidad);
+    return dia.toISOString().slice(0, 10);
+}
+function partesFecha(fecha = new Date()) {
+    const formato = new Intl.DateTimeFormat("en-GB", {
+        timeZone: programa?.config?.zonaHoraria || "Europe/Madrid",
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23"
+    });
+    const partes = Object.fromEntries(formato.formatToParts(fecha).map(p => [p.type, p.value]));
+    return { fecha: `${partes.year}-${partes.month}-${partes.day}`, hora: `${partes.hour}:${partes.minute}`, segundo: Number(partes.second) };
+}
+function fechaJornada(fecha = new Date()) {
+    const partes = partesFecha(fecha);
+    return perteneceNocheAnterior(partes.hora) ? sumarDias(partes.fecha, -1) : partes.fecha;
+}
+function fechaHoraEnZona(fecha, hora) {
+    const base = Date.parse(`${fecha}T${hora}:00Z`);
+    let instante = base;
+    // Ajustar la diferencia entre UTC y la zona del municipio, también en invierno.
+    for (let i = 0; i < 3; i++) {
+        const partes = partesFecha(new Date(instante));
+        const vista = Date.parse(`${partes.fecha}T${partes.hora}:${String(partes.segundo).padStart(2, "0")}Z`);
+        instante += base - vista;
+    }
+    return new Date(instante);
+}
+function obtenerFechaHoraActo(dia, acto) {
+    if (horaMinutos(acto.hora) === null) return null;
+    const fecha = perteneceNocheAnterior(acto.hora) ? sumarDias(dia.fecha, 1) : dia.fecha;
+    return fechaHoraEnZona(fecha, acto.hora);
+}
+function urlSegura(valor, soloLocal = false) {
+    if (typeof valor !== "string" || !valor.trim()) return "";
+    try {
+        const url = new URL(valor, document.baseURI);
+        if (!["http:", "https:"].includes(url.protocol)) return "";
+        if (soloLocal && url.origin !== new URL(document.baseURI).origin) return "";
+        return url.href;
+    } catch { return ""; }
+}
 function aplicarTema() {
-
     const root = document.documentElement;
-
-    root.style.setProperty("--color-principal", programa.tema.principal);
-    root.style.setProperty("--color-secundario", programa.tema.secundario);
-    root.style.setProperty("--color-fondo", programa.tema.fondo);
-    root.style.setProperty("--color-texto", programa.tema.texto);
-    root.style.setProperty("--color-superficie", programa.tema.tarjeta);
-
-    const themeColor =
-        document.querySelector('meta[name="theme-color"]');
-
-    if (
-        themeColor &&
-        programa.tema.navegador
-    ) {
-
-        themeColor.setAttribute(
-            "content",
-            programa.tema.navegador
-        );
-
+    for (const [variable, campo] of Object.entries({principal:"principal", secundario:"secundario", fondo:"fondo", texto:"texto", superficie:"tarjeta"})) {
+        root.style.setProperty(`--color-${variable}`, programa.tema[campo]);
     }
-
+    $('meta[name="theme-color"]').setAttribute("content", programa.tema.navegador || programa.tema.principal);
 }
-
-/*=========================================================
-CARGAR LOGO Y PORTADA
-=========================================================*/
-
 function aplicarImagenes() {
-
-    /*=========================================================
-    TÍTULO DE LA PÁGINA
-    =========================================================*/
-
-    if(programa.config.tituloPagina){
-
-        document.title =
-            programa.config.tituloPagina;
-
+    document.title = programa.config.tituloPagina || programa.config.titulo;
+    const logo = $("#logo");
+    logo.src = urlSegura(programa.config.logo.archivo, true);
+    logo.alt = `Fiestas de ${programa.config.municipio.nombre} ${programa.config.anio}`;
+    for (const tamano of ["pc", "tablet", "movil"]) {
+        document.documentElement.style.setProperty(`--logo-${tamano}`, programa.config.logo[tamano].ancho + "px");
     }
-
-        const logo = $("#logo");
-
-        if (logo) {
-
-        logo.src = programa.config.logo.archivo;
-
-    /*=============================================
-      TAMAÑOS DEL LOGO
-    =============================================*/
-
-    document.documentElement.style.setProperty(
-        "--logo-pc",
-        programa.config.logo.pc.ancho + "px"
-    );
-
-    document.documentElement.style.setProperty(
-        "--logo-tablet",
-        programa.config.logo.tablet.ancho + "px"
-    );
-
-    document.documentElement.style.setProperty(
-        "--logo-movil",
-        programa.config.logo.movil.ancho + "px"
-    );
-
-    /*=============================================
-      MÁRGENES
-    =============================================*/
-
-    if (programa.config.logo.margenSuperior !== undefined) {
-
-        logo.style.marginTop =
-            programa.config.logo.margenSuperior + "px";
-
-    }
-
-    if (programa.config.logo.margenInferior !== undefined) {
-
-        logo.style.marginBottom =
-            programa.config.logo.margenInferior + "px";
-
-    }
-
+    logo.style.marginTop = (programa.config.logo.margenSuperior ?? 0) + "px";
+    logo.style.marginBottom = (programa.config.logo.margenInferior ?? 0) + "px";
+    $("#favicon").href = urlSegura(programa.config.favicon || "img/icon_festes.png", true);
+    const portada = urlSegura(programa.config.portada, true);
+    $("#hero").style.backgroundImage = portada ? `url(${JSON.stringify(portada)})` : "none";
 }
-
-/*=========================================================
-FAVICON
-=========================================================*/
-
-const favicon =
-    document.getElementById("favicon");
-
-if(favicon &&
-   programa.config.favicon){
-
-    favicon.href =
-        programa.config.favicon;
-
-}
-
-/*=========================================================
-FIN FAVICON
-=========================================================*/
-    
-	const hero = $("#hero");
-
-    if (hero) {
-
-        hero.style.backgroundImage =
-            `url("${programa.config.portada}")`;
-
-        hero.style.backgroundSize = "cover";
-        hero.style.backgroundPosition = "center";
-
-    }
-
-}
-
-/*=========================================================
-CARGAR CABECERA
-=========================================================*/
-
 function cargarCabecera() {
-
-    $("#tituloWeb").textContent =
-        programa.config.titulo;
-
-    $("#subtituloWeb").textContent =
-    	programa.config.municipio.nombre;
-
-    $("#anioFiestas").textContent =
-        programa.config.anio;
-
-    $("#copyright").textContent =
-        "© " + programa.config.copyright;
-
+    $("#tituloWeb").textContent = programa.config.titulo;
+    $("#subtituloWeb").textContent = programa.config.municipio.nombre;
+    $("#anioFiestas").textContent = programa.config.anio;
+    $("#copyright").textContent = "© " + (programa.config.copyright || "");
 }
-
-/*=========================================================
-BUSCAR DÍA POR ID
-=========================================================*/
-
-function buscarDia(id) {
-
-    return programa.dias.find(d => d.id == id);
-
-}
-
-/*=========================================================
-BUSCAR ACTO POR ID
-=========================================================*/
-
+function buscarDia(id) { return programa.dias.find(dia => String(dia.id) === String(id)); }
 function buscarActo(id) {
-
     for (const dia of programa.dias) {
-
-        const acto = dia.actos.find(a => a.id == id);
-
+        const acto = dia.actos.find(a => String(a.id) === String(id));
         if (acto) return acto;
-
     }
-
     return null;
-
 }
-
-/*=========================================================
-OBTENER CATEGORÍA
-=========================================================*/
-
-function obtenerCategoria(id) {
-
-    return programa.categorias.find(c => c.id === id);
-
-}
-
-/*=========================================================
-DEVOLVER COLOR DE CATEGORÍA
-=========================================================*/
-
-function colorCategoria(id) {
-
-    const categoria = obtenerCategoria(id);
-
-    return categoria ? categoria.color : "#999999";
-
-}
-
-/*=========================================================
-DEVOLVER ICONO DE CATEGORÍA
-=========================================================*/
-
-function iconoCategoria(id) {
-
-    const categoria = obtenerCategoria(id);
-
-    return categoria ? categoria.icono : "📌";
-
-}
-
-/*=========================================================
-ESCAPAR HTML
-=========================================================*/
-
-function escaparHTML(texto) {
-
-    if (!texto) return "";
-
-    const div = document.createElement("div");
-
-    div.textContent = texto;
-
-    return div.innerHTML;
-
-}
-
-/*=========================================================
-ORDENAR HORA DE FIESTAS
-Las horas comprendidas entre 00:00 y la hora de cambio
-se consideran continuación de la noche anterior.
-=========================================================*/
-
-function obtenerHoraOrdenacion(hora){
-
-    if(!hora) return 9999;
-
-    const [h,m]=hora.split(":").map(Number);
-
-    let minutos=h*60+m;
-
-    const cambioDia=
-        programa?.config?.horaCambioDia || "06:00";
-
-    const [hc,mc]=cambioDia.split(":").map(Number);
-
-    const minutosCambio=hc*60+mc;
-
-    if(minutos<minutosCambio){
-
-        minutos+=24*60;
-
-    }
-
-    return minutos;
-
-}
-
-/*=========================================================
-¿LA HORA PERTENECE A LA NOCHE ANTERIOR?
-=========================================================*/
-
-function perteneceNocheAnterior(hora){
-
-    const cambioDia =
-        programa?.config?.horaCambioDia || "06:00";
-
-    return obtenerHoraOrdenacion(hora) >= 24*60;
-
-}
+function obtenerCategoria(id) { return programa.categorias.find(c => c.id === id); }
+function colorCategoria(id) { return obtenerCategoria(id)?.color || "#607D8B"; }
+function iconoCategoria(id) { return obtenerCategoria(id)?.icono || "📌"; }

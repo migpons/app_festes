@@ -11,8 +11,7 @@ el ultimo programa consultado.
 "use strict";
 
 const RUTA_MENU_PROGRAMAS = "data/menu_programas.json";
-const RUTA_PROGRAMA_RESPALDO = "data/programa.json";
-const ID_PROGRAMA_RESPALDO = "iglesuela-2026";
+const ID_PROGRAMA_RESPALDO = "vilafranca-2026";
 const CLAVE_PROGRAMA_SELECCIONADO = "programaSeleccionado";
 
 let menuProgramas = null;
@@ -27,7 +26,7 @@ async function prepararSelectorProgramas() {
 
     try {
 
-        const respuesta = await fetch(RUTA_MENU_PROGRAMAS);
+        const respuesta = await fetch(RUTA_MENU_PROGRAMAS, { cache: "no-cache" });
 
         if (!respuesta.ok) {
             throw new Error(`No se ha encontrado ${RUTA_MENU_PROGRAMAS}`);
@@ -108,11 +107,19 @@ function crearMenuProgramasRespaldo() {
         programas: [
             {
                 id: ID_PROGRAMA_RESPALDO,
-                nombre: "Iglesuela del Cid",
+                nombre: "Villafranca del Cid",
                 anio: 2026,
-                archivo: RUTA_PROGRAMA_RESPALDO,
-                icono: "img/icon-iglesuela.png",
+                archivo: "data/programa_vilafranca_26.json",
+                icono: "img/icon-vilafranca.png",
                 activo: true
+            },
+            {
+                id: "iglesuela-2026", nombre: "Iglesuela del Cid", anio: 2026,
+                archivo: "data/programa_iglesuela_26.json", icono: "img/icon-iglesuela.png", activo: true
+            },
+            {
+                id: "castellfort-2026", nombre: "Castellfort", anio: 2026,
+                archivo: "data/programa_castellfort_26.json", icono: "img/icon-castellfort.png", activo: true
             }
         ]
     };
@@ -133,7 +140,7 @@ function resolverProgramaSeleccionado() {
     const programasActivos = obtenerProgramasActivos();
 
     if (programasActivos.length === 0) {
-        return crearMenuProgramasRespaldo().programas[0];
+        throw new Error("No hay programas publicados en este momento.");
     }
 
     const parametros = new URLSearchParams(window.location.search);
@@ -234,12 +241,14 @@ function crearSelectorProgramas() {
     boton.className = "selector-programas-boton";
     boton.setAttribute("aria-haspopup", "listbox");
     boton.setAttribute("aria-expanded", "false");
+    boton.setAttribute("aria-controls", "listaProgramas");
     boton.setAttribute("aria-label", "Seleccionar programa de fiestas");
 
     insertarDatosPrograma(boton, programaSeleccionadoInfo, true);
 
     const lista = document.createElement("div");
     lista.className = "selector-programas-lista";
+    lista.id = "listaProgramas";
     lista.setAttribute("role", "listbox");
     lista.setAttribute("aria-label", "Programas de fiestas disponibles");
     lista.hidden = true;
@@ -250,6 +259,7 @@ function crearSelectorProgramas() {
         opcion.type = "button";
         opcion.className = "selector-programas-opcion";
         opcion.setAttribute("role", "option");
+        opcion.tabIndex = -1;
 
         const seleccionado = programaMenu.id === programaSeleccionadoInfo.id;
 
@@ -284,6 +294,7 @@ function crearSelectorProgramas() {
         const abierto = boton.getAttribute("aria-expanded") === "true";
 
         establecerEstadoSelector(!abierto, contenedor, boton, lista);
+        if (!abierto) lista.querySelector('[aria-selected="true"]')?.focus();
 
     });
 
@@ -297,11 +308,35 @@ function crearSelectorProgramas() {
 
     document.addEventListener("keydown", event => {
 
-        if (event.key === "Escape") {
+        if (event.key === "Escape" && !lista.hidden) {
+            event.preventDefault();
             establecerEstadoSelector(false, contenedor, boton, lista);
             boton.focus();
         }
 
+    });
+
+    const opciones = () => [...lista.querySelectorAll('[role="option"]')];
+    boton.addEventListener("keydown", event => {
+        if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+        event.preventDefault();
+        establecerEstadoSelector(true, contenedor, boton, lista);
+        const items = opciones();
+        (event.key === "ArrowUp" || event.key === "End" ? items.at(-1) : items[0])?.focus();
+    });
+    lista.addEventListener("keydown", event => {
+        const items = opciones();
+        const indice = items.indexOf(document.activeElement);
+        let siguiente;
+        if (event.key === "ArrowDown") siguiente = (indice + 1) % items.length;
+        if (event.key === "ArrowUp") siguiente = (indice - 1 + items.length) % items.length;
+        if (event.key === "Home") siguiente = 0;
+        if (event.key === "End") siguiente = items.length - 1;
+        if (siguiente !== undefined) { event.preventDefault(); items[siguiente].focus(); }
+        if (event.key === "Tab") establecerEstadoSelector(false, contenedor, boton, lista);
+    });
+    contenedor.addEventListener("focusout", event => {
+        if (!contenedor.contains(event.relatedTarget)) establecerEstadoSelector(false, contenedor, boton, lista);
     });
 
     contenedor.appendChild(boton);
@@ -319,7 +354,7 @@ function insertarDatosPrograma(elemento, programaMenu, mostrarFlecha) {
     icono.className = "selector-programas-icono";
     icono.width = 32;
     icono.height = 32;
-    icono.src = programaMenu.icono || "img/icon-192.png";
+    icono.src = urlSegura(programaMenu.icono, true) || "img/icon_festes.png";
     icono.alt = "";
     icono.setAttribute("aria-hidden", "true");
 

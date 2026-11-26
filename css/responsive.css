@@ -30,7 +30,7 @@
 
     #hero{
 
-        height:220px;
+        min-height:220px;
 
     }
 
@@ -134,6 +134,8 @@
     #menu{
 
         width:100%;
+
+        flex:0 0 auto;
 
         border-right:none;
 
@@ -385,7 +387,7 @@
 
     #hero{
 
-        height:260px;
+        min-height:260px;
 
     }
 
@@ -430,6 +432,7 @@
     #menu{
 
         width:240px;
+        flex-basis:240px;
 
         padding:18px;
 		
@@ -494,6 +497,7 @@
     #menu{
 
         position:sticky;
+        width:100%;
 
         top:0;
 
@@ -643,7 +647,7 @@ html{
 
     #hero{
 
-        height:170px;
+        min-height:170px;
 
     }
 

@@ -69,6 +69,7 @@
   "dias": [
     {
       "id": 1,
+      "activo": true,
       "fecha": "2026-09-01",
       "titulo": "🗓️ Martes 01 de Septiembre",
       "descripcion": "Inicio de fiestas",
@@ -205,8 +206,9 @@
 
     {
       "id": 2,
+      "activo": true,
       "fecha": "2026-09-02",
-      "titulo": "🗓️ Miercoles 02 de Septiembre",
+      "titulo": "🗓️ Miércoles 02 de Septiembre",
       "descripcion": "Día de “Los Terribles” y de los niños",
       "imagen": "",
       "actos": [
@@ -358,6 +360,7 @@
     },
     {
       "id": 3,
+      "activo": true,
       "fecha": "2026-09-03",
       "titulo": "🗓️ Jueves 03 de Septiembre",
       "descripcion": "Día de la Peña “Los Kabrones”",
@@ -565,6 +568,7 @@
     },
     {
       "id": 8,
+      "activo": true,
       "fecha": "2026-09-04",
       "titulo": "🗓️ Viernes 04 de Septiembre",
       "descripcion": "Día de nuestros mayores y Peña “Las de Ahora”",
@@ -754,6 +758,7 @@
     },
     {
       "id": 9,
+      "activo": true,
       "fecha": "2026-09-05",
       "titulo": "🗓️ Sábado 05 de Septiembre",
       "descripcion": "",
@@ -912,7 +917,7 @@
           "descripcion": "",
           "ubicacion": "Recorrido taurino",
           "maps": "",
-          "imagen": "img26/madroño.png",
+          "imagen": "img26/madrono.png",
           "organiza": "Comisión",
           "precio": "Gratuito",
           "observaciones": "",
@@ -997,6 +1002,7 @@
     },
     {
       "id": 10,
+      "activo": true,
       "fecha": "2026-09-06",
       "titulo": "🗓️ Domingo 06 de Septiembre",
       "descripcion": "Día Ntra. Sra. La Virgen del Cid",

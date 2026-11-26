@@ -38,7 +38,7 @@ body{
 
     position:relative;
 
-    height:320px;
+    min-height:320px;
 
     background-size:cover;
 
@@ -51,7 +51,7 @@ body{
 .hero-overlay{
 
     width:100%;
-    height:100%;
+    min-height:inherit;
 
     background:linear-gradient(
         rgba(0,0,0,.30),
@@ -126,6 +126,8 @@ body{
 .barraSuperior{
 
     display:flex;
+    flex-wrap:wrap;
+    gap:16px;
 
     justify-content:space-between;
 
@@ -161,7 +163,8 @@ body{
 
     width:320px;
 
-    min-width:320px;
+    min-width:0;
+    flex:0 0 320px;
 
     background:white;
 
@@ -372,6 +375,8 @@ body{
 .tarjeta-cabecera{
 
     display:flex;
+    flex-wrap:wrap;
+    gap:10px;
 
     justify-content:space-between;
 
@@ -865,3 +870,18 @@ FAVORITOS
 /* =========================================================
    FIN
 ========================================================= */
+
+/* Accesibilidad, avisos y texto de longitud variable. */
+[hidden] { display:none !important; }
+.aviso-horario { display:block; margin-top:6px; font-size:.8rem; font-weight:400; }
+#contadorActo { max-width:34rem; overflow-wrap:anywhere; }
+#avisoFavoritos { margin:0; padding:12px 20px; background:#fff3cd; color:#513e00; }
+.tarjeta h3, .tarjeta p, .titulo-dia { overflow-wrap:anywhere; }
+.cabecera-izquierda, .cabecera-derecha { flex-wrap:wrap; }
+.boton-favorito { min-width:44px; }
+button:focus-visible { outline:3px solid #315a9b; outline-offset:3px; }
+button:disabled { opacity:.65; cursor:default; }
+@media (prefers-reduced-motion:reduce) {
+    html { scroll-behavior:auto; }
+    *, *::before, *::after { animation:none !important; transition:none !important; }
+}

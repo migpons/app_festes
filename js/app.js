@@ -1,491 +1,153 @@
-/*
-=========================================================
-Fiestas Villafranca
-app.js
-
-Inicialización de la aplicación
-=========================================================
-*/
-
 "use strict";
 
-/*=========================================================
-POSICION INICIAL DE LA PAGINA
-=========================================================*/
-
-// Evita que el navegador restaure una posicion de scroll anterior
-// al recargar o cambiar de programa.
-if ("scrollRestoration" in history) {
-    history.scrollRestoration = "manual";
-}
-
-/*=========================================================
-VARIABLES GLOBALES
-=========================================================*/
-
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 let programa = null;
-let diaSeleccionado = 0;
+let diaSeleccionado = -1;
 let viendoFavoritos = false;
-
-/*=========================================================
-INICIAR APLICACIÓN
-=========================================================*/
+let seguirDiaActual = true;
+let ultimaJornada = "";
+let temporizador = null;
 
 document.addEventListener("DOMContentLoaded", iniciarAplicacion);
 
-/*=========================================================
-FUNCIÓN PRINCIPAL
-=========================================================*/
-
 async function iniciarAplicacion() {
-
-    // La barra global de seleccion debe ser visible al entrar.
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-
+    window.scrollTo({top: 0, left: 0, behavior: "instant"});
     try {
-
-        // Resolver el programa que se debe mostrar
-        const programaActivo = await prepararSelectorProgramas();
-
-        // Cargar programa
-        await cargarPrograma(programaActivo.archivo);
-
-        // Aplicar colores
-        aplicarTema();
-
-        // Logo y portada
-        aplicarImagenes();
-
-        // Cabecera
-        cargarCabecera();
-
-        // Selector de programas
+        const activo = await prepararSelectorProgramas();
+        // Disponible incluso si el JSON de un municipio no puede cargarse.
         crearSelectorProgramas();
-
-        // Crear menú
+        await cargarPrograma(activo.archivo);
+        aplicarTema();
+        aplicarImagenes();
+        cargarCabecera();
         crearMenu();
-
-        // Mostrar el día correspondiente a la fecha actual
-	mostrarDia(obtenerIndiceDiaActual());
-
-        // Mostrar próximo acto
-        mostrarProximoActo();
-	
-	// Activar Buscador
-	activarBuscador();
-
-	// Botón favoritos
-	activarBotonFavoritos();
-
-	// Actualizar contador
-	actualizarBotonFavoritos();
-
-        // Algunos navegadores moviles intentan restaurar el scroll despues
-        // de terminar de construir el contenido. Reafirmamos el inicio una
-        // vez que la interfaz ya esta lista.
-        requestAnimationFrame(() => {
-            window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-        });
-
-    }
-
-    catch (error) {
-
+        mostrarDia(obtenerIndiceDiaActual());
+        activarBuscador();
+        activarBotonFavoritos();
+        actualizarBotonFavoritos();
+        document.getElementById("buscador").disabled = false;
+        document.getElementById("botonFavoritos").disabled = false;
+        ultimaJornada = fechaJornada();
+        actualizarEstadoTemporal();
+        clearInterval(temporizador);
+        temporizador = setInterval(actualizarEstadoTemporal, 15000);
+        document.onvisibilitychange = () => { if (!document.hidden) actualizarEstadoTemporal(); };
+        window.addEventListener("pageshow", actualizarEstadoTemporal);
+        requestAnimationFrame(() => window.scrollTo({top: 0, left: 0, behavior: "instant"}));
+    } catch (error) {
         console.error(error);
-
         mostrarError(error);
-
     }
-
 }
 
-/*=========================================================
-PRÓXIMO ACTO
-=========================================================*/
-
-function mostrarProximoActo() {
-
-    const contenedor = document.getElementById("contadorActo");
-
-    if (!contenedor || !programa) return;
-
-    const ahora = new Date();
-
-	let fechaBusqueda = new Date();
-
-	const horaActual = ahora.toTimeString().substring(0,5);
-
-	const horaActualOrden = obtenerHoraOrdenacion(horaActual);
-
-	if(perteneceNocheAnterior(horaActual)){
-
-   	 fechaBusqueda.setDate(fechaBusqueda.getDate()-1);
-
-	}
-
-	const hoyTexto = fechaBusqueda
-    	.toISOString()
-   	 .substring(0,10);
-
+function obtenerSiguienteActo(ahora = new Date()) {
     let siguiente = null;
-
     for (const dia of programa.dias) {
-
         for (const acto of dia.actos) {
-
-            const horaOrden = obtenerHoraOrdenacion(acto.hora);
-
-            // Día actual
-            if (dia.fecha === hoyTexto) {
-
-                if (horaOrden >= horaActualOrden) {
-
-                    siguiente = {
-                        fecha: dia.fecha,
-                        titulo: acto.titulo,
-                        hora: acto.hora,
-                        ubicacion: acto.ubicacion
-                    };
-
-                    break;
-
-                }
-
-            }
-
-            // Días posteriores
-            else if (dia.fecha > hoyTexto) {
-
-                siguiente = {
-                    fecha: dia.fecha,
-                    titulo: acto.titulo,
-                    hora: acto.hora,
-                    ubicacion: acto.ubicacion
-                };
-
-                break;
-
-            }
-
+            const fecha = obtenerFechaHoraActo(dia, acto);
+            if (!fecha || fecha < ahora) continue;
+            if (!siguiente || fecha < siguiente.fecha) siguiente = {dia, acto, fecha};
         }
-
-        if (siguiente) break;
-
     }
+    return siguiente;
+}
 
-    if (!siguiente) {
-
-        contenedor.innerHTML = `
-            🎉 <strong>Las fiestas han finalizado.</strong>
-        `;
-
+function mostrarProximoActo(ahora = new Date()) {
+    const contenedor = document.getElementById("contadorActo");
+    if (!programa || !contenedor) return;
+    vaciar(contenedor);
+    if (!programa.dias.length) {
+        contenedor.textContent = "No hay días publicados en este programa.";
         return;
-
     }
-
-    let textoFecha = "";
-
-    const manana = new Date(ahora);
-    manana.setDate(manana.getDate()+1);
-
-    const mananaTexto = manana.toISOString().substring(0,10);
-
-    if (siguiente.fecha === hoyTexto) {
-
-        textoFecha = "Hoy";
-
+    if (!programa.dias.some(dia => dia.actos.length)) {
+        contenedor.textContent = "No hay actos publicados en este programa.";
+        return;
     }
-    else if (siguiente.fecha === mananaTexto) {
-
-        textoFecha = "Mañana";
-
+    const siguiente = obtenerSiguienteActo(ahora);
+    const jornada = fechaJornada(ahora);
+    const sinHora = programa.dias.some(d => d.fecha >= jornada && d.actos.some(a => horaMinutos(a.hora) === null));
+    if (!siguiente) {
+        const ultimaFecha = programa.dias.at(-1).fecha;
+        contenedor.textContent = sinHora ? "Consulta el programa: hay actos sin hora exacta." :
+            jornada > ultimaFecha ? "🎉 Las fiestas han finalizado." : "No quedan actos con hora programada para los días publicados.";
+        return;
     }
-    else{
-
-        textoFecha = new Date(siguiente.fecha).toLocaleDateString(
-            "es-ES",
-            {
-                weekday:"long",
-                day:"numeric",
-                month:"long"
-            }
-        );
-
-    }
-
-    contenedor.innerHTML = `
-        🕒 <strong>Próximo acto</strong><br>
-        ${textoFecha} · <strong>${siguiente.hora}</strong><br>
-        ${siguiente.titulo}
-    `;
-
+    const fechaActo = partesFecha(siguiente.fecha).fecha;
+    const hoy = partesFecha(ahora).fecha;
+    const etiqueta = fechaActo === hoy ? "Hoy" : fechaActo === sumarDias(hoy, 1) ? "Mañana" : formatearFecha(fechaActo);
+    contenedor.appendChild(crearElemento("strong", "", sinHora ? "🕒 Próximo acto con hora" : "🕒 Próximo acto"));
+    contenedor.appendChild(document.createElement("br"));
+    contenedor.appendChild(crearElemento("span", "", `${etiqueta} · ${siguiente.acto.hora}`));
+    contenedor.appendChild(document.createElement("br"));
+    contenedor.appendChild(crearElemento("span", "", siguiente.acto.titulo));
+    if (sinHora) contenedor.appendChild(crearElemento("small", "aviso-horario", "Consulta también los actos sin hora exacta."));
 }
 
-/*=========================================================
-OBTENER DÍA ACTUAL
-=========================================================*/
-
-function obtenerIndiceDiaActual() {
-
-    const hoy = new Date();
-
-    const hoyTexto =
-        hoy.getFullYear() + "-" +
-        String(hoy.getMonth() + 1).padStart(2, "0") + "-" +
-        String(hoy.getDate()).padStart(2, "0");
-
-
-    // Buscar el día de hoy solamente si tiene actos
-    const indiceHoy = programa.dias.findIndex(dia =>
-        dia.fecha === hoyTexto &&
-        Array.isArray(dia.actos) &&
-        dia.actos.length > 0
-    );
-
-    if (indiceHoy >= 0) {
-
-        return indiceHoy;
-
-    }
-
-
-    // Si todavía no han empezado las fiestas,
-    // buscar el primer día que tenga actos
-    if (hoyTexto < programa.config.fechaInicio) {
-
-        const primerDiaConActos = programa.dias.findIndex(dia =>
-            Array.isArray(dia.actos) &&
-            dia.actos.length > 0
-        );
-
-        return primerDiaConActos >= 0 ? primerDiaConActos : 0;
-
-    }
-
-
-    // Buscar el siguiente día posterior a hoy
-    // que tenga al menos un acto
-    const indiceSiguiente = programa.dias.findIndex(dia =>
-        dia.fecha > hoyTexto &&
-        Array.isArray(dia.actos) &&
-        dia.actos.length > 0
-    );
-
-    if (indiceSiguiente >= 0) {
-
-        return indiceSiguiente;
-
-    }
-
-
-    // Si ya no queda ningún día posterior con actos,
-    // buscar el último día que tenga actos
-    for (let i = programa.dias.length - 1; i >= 0; i--) {
-
-        if (
-            Array.isArray(programa.dias[i].actos) &&
-            programa.dias[i].actos.length > 0
-        ) {
-
-            return i;
-
-        }
-
-    }
-
-
-    // Seguridad: si no hay ningún acto en todo el programa
-    return 0;
-
+function obtenerIndiceDiaActual(ahora = new Date()) {
+    const hoy = fechaJornada(ahora);
+    const conActos = programa.dias.map((dia, indice) => ({dia, indice})).filter(item => item.dia.actos.length);
+    const actual = conActos.find(item => item.dia.fecha === hoy) || conActos.find(item => item.dia.fecha > hoy) || conActos.at(-1);
+    return actual ? actual.indice : programa.dias.length ? 0 : -1;
 }
 
-/*=========================================================
-MOSTRAR ERROR
-=========================================================*/
+function actualizarEstadoTemporal() {
+    if (!programa) return;
+    mostrarProximoActo();
+    const jornada = fechaJornada();
+    if (jornada !== ultimaJornada && seguirDiaActual && !viendoFavoritos && !document.getElementById("buscador").value.trim()) {
+        mostrarDia(obtenerIndiceDiaActual());
+    }
+    ultimaJornada = jornada;
+}
 
 function mostrarError(error) {
-
+    programa = null;
+    clearInterval(temporizador);
+    document.title = "No se ha podido cargar el programa";
+    document.getElementById("tituloWeb").textContent = "No se ha podido cargar el programa";
+    document.getElementById("contadorActo").textContent = "Puedes reintentar o seleccionar otro programa.";
+    document.getElementById("buscador").disabled = true;
+    document.getElementById("botonFavoritos").disabled = true;
     const contenido = document.getElementById("contenido");
-
-    contenido.innerHTML = `
-        <div class="error">
-            <h2>Error</h2>
-            <p>${error.message}</p>
-        </div>
-    `;
-
+    vaciar(contenido);
+    const aviso = crearElemento("div", "error");
+    aviso.setAttribute("role", "alert");
+    aviso.appendChild(crearElemento("h2", "", "No se ha podido cargar el programa"));
+    aviso.appendChild(crearElemento("p", "", error.message || "Comprueba tu conexión e inténtalo de nuevo."));
+    const reintentar = crearElemento("button", "boton", "Reintentar");
+    reintentar.type = "button";
+    reintentar.onclick = () => window.location.reload();
+    aviso.appendChild(reintentar);
+    contenido.appendChild(aviso);
 }
 
-function activarBuscador(){
-
-    const buscador =
-        document.getElementById("buscador");
-
-    if(!buscador) return;
-
-    buscador.addEventListener("input",()=>{
-
-        const texto =
-            buscador.value.trim().toLowerCase();
-
-        /*
-        ================================================
-        SI NO HAY TEXTO
-        ================================================
-        */
-
-        if(texto === ""){
-
-            if(viendoFavoritos){
-
-                mostrarFavoritos();
-
-            }else{
-
-                mostrarDia(diaSeleccionado);
-
-            }
-
-            return;
-
-        }
-
-        /*
-        ================================================
-        BUSCAR EN TODO EL PROGRAMA
-        ================================================
-        */
-
-        const contenido =
-            document.getElementById("contenido");
-
-        vaciar(contenido);
-
-        const titulo =
-            crearElemento(
-                "h2",
-                "titulo-dia",
-                "🔎 Resultados de búsqueda"
-            );
-
-        contenido.appendChild(titulo);
-
-        let encontrados = 0;
-
-        programa.dias.forEach(dia => {
-
-            /*
-            ============================================
-            BUSCAR ACTOS DEL DÍA
-            ============================================
-            */
-
-            const actosEncontrados =
-                dia.actos.filter(acto => {
-
-                    const categoria =
-                        obtenerCategoria(acto.categoria);
-
-                    const contenidoActo = [
-
-                        acto.titulo,
-                        acto.descripcion,
-                        acto.ubicacion,
-                        acto.organiza,
-                        acto.precio,
-                        acto.observaciones,
-                        categoria
-                            ? categoria.nombre
-                            : "",
-                        ...(acto.etiquetas || [])
-
-                    ]
-                    .filter(Boolean)
-                    .join(" ")
-                    .toLowerCase();
-
-                    return contenidoActo.includes(texto);
-
-                });
-
-            /*
-            ============================================
-            SI NO HAY RESULTADOS EN ESTE DÍA
-            ============================================
-            */
-
-            if(actosEncontrados.length === 0){
-
-                return;
-
-            }
-
-            /*
-            ============================================
-            TÍTULO DEL DÍA
-            ============================================
-            */
-
-            const tituloDia =
-                crearElemento(
-                    "h3",
-                    "titulo-dia",
-                    dia.titulo
-                );
-
-            contenido.appendChild(tituloDia);
-
-            /*
-            ============================================
-            ORDENAR LOS RESULTADOS
-            ============================================
-            */
-
-            const actosOrdenados =
-                [...actosEncontrados];
-
-            ordenarActos(actosOrdenados);
-
-            /*
-            ============================================
-            MOSTRAR RESULTADOS
-            ============================================
-            */
-
-            actosOrdenados.forEach(acto => {
-
-                contenido.appendChild(
-
-                    crearTarjeta(acto, dia)
-
-                );
-
-                encontrados++;
-
-            });
-
+function limpiarBusqueda() { document.getElementById("buscador").value = ""; }
+function activarBuscador() { document.getElementById("buscador").oninput = mostrarResultadosBusqueda; }
+function mostrarResultadosBusqueda() {
+    const texto = normalizarTexto(document.getElementById("buscador").value.trim());
+    if (!texto) {
+        if (viendoFavoritos) mostrarFavoritos();
+        else mostrarDia(diaSeleccionado);
+        return;
+    }
+    const contenido = document.getElementById("contenido");
+    vaciar(contenido);
+    contenido.appendChild(crearElemento("h2", "titulo-dia", viendoFavoritos ? "🔎 Buscar en mis favoritos" : "🔎 Resultados de búsqueda"));
+    const favoritos = new Set(obtenerFavoritosVisibles());
+    let encontrados = 0;
+    for (const dia of programa.dias) {
+        const actos = dia.actos.filter(acto => {
+            if (viendoFavoritos && !favoritos.has(dia.fecha + "_" + acto.id)) return false;
+            const contenidoActo = [acto.titulo, acto.descripcion, acto.ubicacion, acto.organiza, acto.precio,
+                acto.observaciones, obtenerCategoria(acto.categoria)?.nombre, ...(acto.etiquetas || [])].filter(Boolean).join(" ");
+            return normalizarTexto(contenidoActo).includes(texto);
         });
-
-        /*
-        ================================================
-        SIN RESULTADOS
-        ================================================
-        */
-
-        if(encontrados === 0){
-
-            contenido.appendChild(
-
-                crearElemento(
-                    "div",
-                    "sin-actos",
-                    "No se han encontrado actos para esa búsqueda."
-                )
-
-            );
-
-        }
-
-    });
-
+        if (!actos.length) continue;
+        contenido.appendChild(crearElemento("h3", "titulo-dia", dia.titulo));
+        actos.forEach(acto => contenido.appendChild(crearTarjeta(acto, dia)));
+        encontrados += actos.length;
+    }
+    if (!encontrados) contenido.appendChild(crearElemento("div", "sin-actos", "No se han encontrado actos para esa búsqueda."));
+    actualizarMenu(-1);
 }

@@ -69,6 +69,7 @@
   "dias": [
     {
       "id": 1,
+      "activo": true,
       "fecha": "2026-08-07",
       "titulo": "🗓️ Viernes 07 de Agosto",
       "descripcion": "Inicio de las Fiestas Patronales",
@@ -205,6 +206,7 @@
 
     {
       "id": 2,
+      "activo": true,
       "fecha": "2026-08-08",
       "titulo": "🗓️ Sábado 08 de Agosto",
       "descripcion": "",
@@ -448,6 +450,7 @@
     },
     {
       "id": 3,
+      "activo": true,
       "fecha": "2026-08-09",
       "titulo": "🗓️ Domingo 09 de Agosto",
       "descripcion": "",
@@ -565,6 +568,7 @@
     },
     {
       "id": 4,
+      "activo": true,
       "fecha": "2026-08-10",
       "titulo": "🗓️ Lunes 10 de Agosto",
       "descripcion": "Día de peñas",
@@ -664,6 +668,7 @@
     },
     {
       "id": 5,
+      "activo": true,
       "fecha": "2026-08-11",
       "titulo": "🗓️ Martes 11 de Agosto",
       "descripcion": "Día de Kintos",
@@ -781,6 +786,7 @@
     },
     {
       "id": 6,
+      "activo": true,
       "fecha": "2026-08-12",
       "titulo": "🗓️ Miércoles 12 de Agosto",
       "descripcion": "Día de los niños",
@@ -988,6 +994,7 @@
     },
     {
       "id": 7,
+      "activo": true,
       "fecha": "2026-08-13",
       "titulo": "🗓️ Jueves 13 de Agosto",
       "descripcion": "Día de la gente mayor",
@@ -1195,6 +1202,7 @@
     },
     {
       "id": 8,
+      "activo": true,
       "fecha": "2026-08-14",
       "titulo": "🗓️ Viernes 14 de Agosto",
       "descripcion": "",
@@ -1348,6 +1356,7 @@
     },
     {
       "id": 9,
+      "activo": true,
       "fecha": "2026-08-15",
       "titulo": "🗓️ Sábado 15 de Agosto",
       "descripcion": "Día de la Virgen",
@@ -1555,6 +1564,7 @@
     },
     {
       "id": 10,
+      "activo": true,
       "fecha": "2026-08-16",
       "titulo": "🗓️ Domingo 16 de Agosto",
       "descripcion": "Día de San Roque",

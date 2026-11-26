@@ -69,6 +69,7 @@
   "dias": [
     {
       "id": 1,
+      "activo": true,
       "fecha": "2026-08-15",
       "titulo": "🗓️ Sábado 15 de Agosto",
       "descripcion": "DÍA DE LOS CHÓFERES",
@@ -151,6 +152,7 @@
 
     {
       "id": 2,
+      "activo": true,
       "fecha": "2026-08-17",
       "titulo": "🗓️ Lunes 17 de Agosto",
       "descripcion": "",
@@ -232,6 +234,7 @@
     },
     {
       "id": 3,
+      "activo": true,
       "fecha": "2026-08-18",
       "titulo": "🗓️ Martes 18 de Agosto",
       "descripcion": "DÍA DE LOS NIÑOS",
@@ -349,6 +352,7 @@
     },
     {
       "id": 4,
+      "activo": true,
       "fecha": "2026-08-19",
       "titulo": "🗓️ Miércoles 19 de Agosto",
       "descripcion": "DÍA DE SAN ROQUE",
@@ -466,6 +470,7 @@
     },
     {
       "id": 5,
+      "activo": true,
       "fecha": "2026-08-20",
       "titulo": "🗓️ Jueves 20 de Agosto",
       "descripcion": "DÍA DE LA COMISIÓN",
@@ -565,6 +570,7 @@
     },
     {
       "id": 6,
+      "activo": true,
       "fecha": "2026-08-21",
       "titulo": "🗓️ Viernes 21 de Agosto",
       "descripcion": "DÍA DE 'JOVES I UELOS'",
@@ -646,6 +652,7 @@
     },
     {
       "id": 7,
+      "activo": true,
       "fecha": "2026-08-22",
       "titulo": "🗓️ Sábado 22 de Agosto",
       "descripcion": "DÍA DEL AYUNTAMIENTO",

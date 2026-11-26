@@ -1,259 +1,100 @@
-/*
-=========================================================
-Fiestas Villafranca
-favoritos.js
-=========================================================
-*/
-
 "use strict";
 
-/*=========================================================
-OBTENER FAVORITOS
-=========================================================*/
+const favoritosEnMemoria = new Map();
+const clavesSoloEnMemoria = new Set();
 
-function obtenerClaveFavoritos(){
-
-    const idPrograma =
-        typeof obtenerIdProgramaSeleccionado === "function"
-            ? obtenerIdProgramaSeleccionado()
-            : null;
-
-    return idPrograma
-        ? `favoritos_${idPrograma}`
-        : "favoritos";
-
+function obtenerClaveFavoritos() {
+    const id = obtenerIdProgramaSeleccionado();
+    return id ? `favoritos_${id}` : "favoritos";
 }
 
-function migrarFavoritosAnteriores(claveActual){
-
-    if (claveActual === "favoritos") return;
-
-    const programaActivo =
-        typeof obtenerProgramaSeleccionadoInfo === "function"
-            ? obtenerProgramaSeleccionadoInfo()
-            : null;
-
-    if (
-        !programaActivo ||
-        programaActivo.archivo !== "data/programa.json"
-    ) {
-        return;
-    }
-
-    if (localStorage.getItem(claveActual) !== null) return;
-
-    const favoritosAnteriores =
-        localStorage.getItem("favoritos");
-
-    if (favoritosAnteriores !== null) {
-        localStorage.setItem(claveActual, favoritosAnteriores);
-    }
-
+function leerListaFavoritos(texto) {
+    try {
+        const lista = JSON.parse(texto || "[]");
+        return Array.isArray(lista) ? [...new Set(lista.filter(x => typeof x === "string"))] : [];
+    } catch { return []; }
 }
 
-function obtenerFavoritos(){
+function migrarFavoritosAnteriores(clave) {
+    // La clave sin municipio pertenece al programa heredado de Iglesuela.
+    if (obtenerIdProgramaSeleccionado() !== "iglesuela-2026") return;
+    if (localStorage.getItem(clave) !== null) return;
+    const anteriores = localStorage.getItem("favoritos");
+    if (anteriores !== null) {
+        const lista = leerListaFavoritos(anteriores);
+        favoritosEnMemoria.set(clave, lista);
+        localStorage.setItem(clave, JSON.stringify(lista));
+    }
+}
 
+function obtenerFavoritos() {
     const clave = obtenerClaveFavoritos();
-
-    migrarFavoritosAnteriores(clave);
-
-    return JSON.parse(
-        localStorage.getItem(clave) || "[]"
-    );
-
+    if (clavesSoloEnMemoria.has(clave)) return [...(favoritosEnMemoria.get(clave) || [])];
+    try {
+        migrarFavoritosAnteriores(clave);
+        const lista = leerListaFavoritos(localStorage.getItem(clave));
+        favoritosEnMemoria.set(clave, lista);
+        return [...lista];
+    } catch { return [...(favoritosEnMemoria.get(clave) || [])]; }
 }
 
-/*=========================================================
-GUARDAR FAVORITOS
-=========================================================*/
-
-function guardarFavoritos(lista){
-
-    localStorage.setItem(
-        obtenerClaveFavoritos(),
-        JSON.stringify(lista)
-    );
-
-}
-
-/*=========================================================
-¿ES FAVORITO?
-=========================================================*/
-
-function esFavorito(clave){
-
-    return obtenerFavoritos().includes(clave);
-
-}
-
-/*=========================================================
-CAMBIAR FAVORITO
-=========================================================*/
-
-function cambiarFavorito(clave){
-
-    let favoritos = obtenerFavoritos();
-
-    if(favoritos.includes(clave)){
-
-        favoritos = favoritos.filter(x => x !== clave);
-
-    }else{
-
-        favoritos.push(clave);
-
+function guardarFavoritos(lista) {
+    const clave = obtenerClaveFavoritos();
+    const limpia = [...new Set(lista.filter(x => typeof x === "string"))];
+    favoritosEnMemoria.set(clave, limpia);
+    try {
+        localStorage.setItem(clave, JSON.stringify(limpia));
+        clavesSoloEnMemoria.delete(clave);
+    } catch { clavesSoloEnMemoria.add(clave); }
+    const aviso = document.getElementById("avisoFavoritos");
+    if (aviso) {
+        aviso.hidden = !clavesSoloEnMemoria.has(clave);
+        aviso.textContent = "El navegador no permite guardar favoritos. Se conservarán mientras esta página esté abierta.";
     }
+}
 
-    	guardarFavoritos(favoritos);
-	actualizarBotonFavoritos();
+function esFavorito(clave) { return obtenerFavoritos().includes(clave); }
 
-    }
+function obtenerFavoritosVisibles() {
+    const validas = new Set(programa.dias.flatMap(dia => dia.actos.map(acto => dia.fecha + "_" + acto.id)));
+    return obtenerFavoritos().filter(clave => validas.has(clave));
+}
 
-/*=========================================================
-MOSTRAR FAVORITOS
-=========================================================*/
+function cambiarFavorito(clave) {
+    const lista = obtenerFavoritos();
+    guardarFavoritos(lista.includes(clave) ? lista.filter(x => x !== clave) : [...lista, clave]);
+    actualizarBotonFavoritos();
+}
 
-function mostrarFavoritos(){
-
-    const contenido =
-        document.getElementById("contenido");
-
+function mostrarFavoritos() {
+    const contenido = document.getElementById("contenido");
     vaciar(contenido);
-
-    const titulo = crearElemento(
-        "h2",
-        "titulo-dia",
-        "❤️ Mis favoritos"
-    );
-
-    contenido.appendChild(titulo);
-
-    const favoritos =
-        obtenerFavoritos();
-
-    if(favoritos.length===0){
-
-        contenido.appendChild(
-
-            crearElemento(
-                "div",
-                "sin-actos",
-                "Todavía no has añadido ningún favorito."
-            )
-
-        );
-
-        return;
-
+    contenido.appendChild(crearElemento("h2", "titulo-dia", "❤️ Mis favoritos"));
+    const favoritos = new Set(obtenerFavoritosVisibles());
+    for (const dia of programa.dias) {
+        const actos = dia.actos.filter(acto => favoritos.has(dia.fecha + "_" + acto.id));
+        if (!actos.length) continue;
+        contenido.appendChild(crearElemento("h3", "titulo-dia", dia.titulo));
+        actos.forEach(acto => contenido.appendChild(crearTarjeta(acto, dia)));
     }
-
-    let encontrados = 0;
-
-    programa.dias.forEach(dia=>{
-
-        dia.actos.forEach(acto=>{
-
-            const clave =
-                dia.fecha + "_" + acto.id;
-
-            if(favoritos.includes(clave)){
-
-                contenido.appendChild(
-
-                    crearTarjeta(acto,dia)
-
-                );
-
-                encontrados++;
-
-            }
-
-        });
-
-    });
-
-    if(encontrados===0){
-
-        contenido.appendChild(
-
-            crearElemento(
-                "div",
-                "sin-actos",
-                "No se han encontrado favoritos."
-            )
-
-        );
-
-    }
-
+    if (!favoritos.size) contenido.appendChild(crearElemento("div", "sin-actos", "Todavía no has añadido ningún favorito de los días publicados."));
+    actualizarMenu(-1);
 }
 
-/*=========================================================
-ACTIVAR BOTÓN FAVORITOS
-=========================================================*/
-
-function activarBotonFavoritos(){
-
-    const boton =
-        document.getElementById("botonFavoritos");
-
-    if(!boton) return;
-
-    boton.addEventListener("click",()=>{
-
-        if(!viendoFavoritos){
-
-            mostrarFavoritos();
-
-            viendoFavoritos = true;
-
-	actualizarBotonFavoritos();
-
-        }
-        else{
-
-            mostrarDia(diaSeleccionado);
-
-            viendoFavoritos = false;
-
-	actualizarBotonFavoritos();
-
-        }
-
-    });
-
+function activarBotonFavoritos() {
+    document.getElementById("botonFavoritos").onclick = () => {
+        limpiarBusqueda();
+        viendoFavoritos = !viendoFavoritos;
+        if (viendoFavoritos) mostrarFavoritos();
+        else mostrarDia(diaSeleccionado);
+        actualizarBotonFavoritos();
+    };
 }
 
-/*=========================================================
-ACTUALIZAR BOTÓN FAVORITOS
-=========================================================*/
-
-function actualizarBotonFavoritos(){
-
-    const boton =
-        document.getElementById("botonFavoritos");
-
-    if(!boton) return;
-
-    if(viendoFavoritos){
-
-        boton.textContent =
-            "← Volver al programa";
-
-        return;
-
-    }
-
-    const total =
-        obtenerFavoritos().length;
-
-    boton.textContent =
-
-        total===0
-
-        ? "❤️ Mis favoritos"
-
-        : `❤️ Mis favoritos (${total})`;
-
+function actualizarBotonFavoritos() {
+    const boton = document.getElementById("botonFavoritos");
+    if (!boton || !programa) return;
+    const total = obtenerFavoritosVisibles().length;
+    boton.textContent = viendoFavoritos ? "← Volver al programa" : `❤️ Mis favoritos${total ? ` (${total})` : ""}`;
+    boton.setAttribute("aria-pressed", String(viendoFavoritos));
 }
-
