@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-estado="cargando">
 
 <head>
 
@@ -7,7 +7,19 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Festes Vilafranca</title>
+    <title>Programa de fiestas</title>
+
+    <!-- El estado inicial se define aquí para evitar destellos antes del CSS. -->
+    <style>
+        [data-estado="cargando"] #aplicacion { visibility:hidden; }
+        [data-estado="cargando"] body { overflow:hidden; }
+        #estadoCarga { position:fixed; inset:0; z-index:1000; display:grid; place-items:center; background:#f7f7f8; color:#454952; font:500 16px/1.5 system-ui,sans-serif; text-align:center; padding:24px; }
+        #estadoCarga[hidden] { display:none; }
+        .estado-carga-indicador { display:block; width:32px; height:32px; margin:0 auto 18px; border:3px solid #dedfe3; border-top-color:#757b85; border-radius:50%; animation:girarCarga .8s linear infinite; }
+        #textoCarga { margin:0; }
+        @keyframes girarCarga { to { transform:rotate(360deg); } }
+        @media (prefers-reduced-motion:reduce) { .estado-carga-indicador { animation:none; } }
+    </style>
 
     <meta name="description"
         content="Programa Oficial de las Fiestas Patronales">
@@ -52,6 +64,17 @@
 
 <body>
 
+    <div id="estadoCarga" role="status" aria-live="polite">
+        <div>
+            <span class="estado-carga-indicador" aria-hidden="true"></span>
+            <p id="textoCarga">Cargando programa…</p>
+        </div>
+    </div>
+
+    <noscript><style>#estadoCarga { display:none; }</style>Activa JavaScript en tu navegador para consultar el programa de fiestas.</noscript>
+
+    <div id="aplicacion" aria-busy="true" inert>
+
     <!-- BARRA GLOBAL DE LA APLICACION -->
 
     <section class="barraAplicacion" aria-label="Seleccionar programa de fiestas">
@@ -76,13 +99,12 @@
 
             <img id="logo"
                 class="logo"
-                src="img/icon_festes.png"
-                alt="Logo">
+                alt=""
+                hidden>
 
             <div class="titulos">
 
                 <h1 id="tituloWeb">
-                    Cargando...
                 </h1>
 
                 <h2 id="subtituloWeb">
@@ -118,7 +140,6 @@
 	</section>
 
     <p id="avisoFavoritos" role="status" hidden></p>
-    <noscript>Activa JavaScript en tu navegador para consultar el programa de fiestas.</noscript>
 
     <!-- CONTENIDO -->
 
@@ -152,11 +173,13 @@
 
     </footer>
 
+    </div>
+
     <!-- JAVASCRIPT -->
 
-    <script src="js/helpers.js?v=20261127"></script>
+    <script src="js/helpers.js?v=20261127-3"></script>
 
-    <script src="js/selector-programas.js?v=20261127"></script>
+    <script src="js/selector-programas.js?v=20261127-3"></script>
 	
 	<script src="js/favoritos.js?v=20261127"></script>
 
@@ -166,7 +189,7 @@
 
     <script src="js/tarjetas.js?v=20261127"></script>
 
-    <script src="js/app.js?v=20261127"></script>
+    <script src="js/app.js?v=20261127-3"></script>
 
 
 

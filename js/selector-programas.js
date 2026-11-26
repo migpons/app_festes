@@ -431,6 +431,7 @@ function seleccionarPrograma(id) {
     const url = new URL(window.location.href);
     url.searchParams.set("programa", nuevoPrograma.id);
 
+    mostrarEstadoCarga();
     window.location.assign(url.toString());
 
 }

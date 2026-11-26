@@ -106,10 +106,33 @@ function aplicarTema() {
     }
     $('meta[name="theme-color"]').setAttribute("content", programa.tema.navegador || programa.tema.principal);
 }
-function aplicarImagenes() {
+function cargarImagenCabecera(imagen, ruta) {
+    return new Promise(resolve => {
+        if (!ruta) { resolve(false); return; }
+        let terminada = false;
+        const finalizar = correcto => {
+            if (terminada) return;
+            terminada = true;
+            clearTimeout(limite);
+            imagen.onload = null;
+            imagen.onerror = null;
+            if (!correcto) imagen.removeAttribute("src");
+            resolve(correcto);
+        };
+        const limite = setTimeout(() => finalizar(false), 6000);
+        imagen.onload = () => {
+            // decode evita mostrar la cabecera antes de que la imagen esté pintable.
+            if (typeof imagen.decode === "function") imagen.decode().then(() => finalizar(true), () => finalizar(imagen.naturalWidth > 0));
+            else finalizar(true);
+        };
+        imagen.onerror = () => finalizar(false);
+        imagen.src = ruta;
+    });
+}
+async function aplicarImagenes() {
     document.title = programa.config.tituloPagina || programa.config.titulo;
     const logo = $("#logo");
-    logo.src = urlSegura(programa.config.logo.archivo, true);
+    logo.hidden = true;
     logo.alt = `Fiestas de ${programa.config.municipio.nombre} ${programa.config.anio}`;
     for (const tamano of ["pc", "tablet", "movil"]) {
         document.documentElement.style.setProperty(`--logo-${tamano}`, programa.config.logo[tamano].ancho + "px");
@@ -118,7 +141,12 @@ function aplicarImagenes() {
     logo.style.marginBottom = (programa.config.logo.margenInferior ?? 0) + "px";
     $("#favicon").href = urlSegura(programa.config.favicon || "img/icon_festes.png", true);
     const portada = urlSegura(programa.config.portada, true);
-    $("#hero").style.backgroundImage = portada ? `url(${JSON.stringify(portada)})` : "none";
+    const [logoListo, portadaLista] = await Promise.all([
+        cargarImagenCabecera(logo, urlSegura(programa.config.logo.archivo, true)),
+        cargarImagenCabecera(new Image(), portada)
+    ]);
+    logo.hidden = !logoListo;
+    $("#hero").style.backgroundImage = portadaLista ? `url(${JSON.stringify(portada)})` : "none";
 }
 function cargarCabecera() {
     $("#tituloWeb").textContent = programa.config.titulo;

@@ -7,10 +7,12 @@ let viendoFavoritos = false;
 let seguirDiaActual = true;
 let ultimaJornada = "";
 let temporizador = null;
+let cargaCompletada = false;
 
 document.addEventListener("DOMContentLoaded", iniciarAplicacion);
 
 async function iniciarAplicacion() {
+    mostrarEstadoCarga();
     window.scrollTo({top: 0, left: 0, behavior: "instant"});
     try {
         const activo = await prepararSelectorProgramas();
@@ -18,7 +20,7 @@ async function iniciarAplicacion() {
         crearSelectorProgramas();
         await cargarPrograma(activo.archivo);
         aplicarTema();
-        aplicarImagenes();
+        const imagenesListas = aplicarImagenes();
         cargarCabecera();
         crearMenu();
         mostrarDia(obtenerIndiceDiaActual());
@@ -29,6 +31,7 @@ async function iniciarAplicacion() {
         document.getElementById("botonFavoritos").disabled = false;
         ultimaJornada = fechaJornada();
         actualizarEstadoTemporal();
+        await Promise.all([imagenesListas, esperarTipografia()]);
         clearInterval(temporizador);
         temporizador = setInterval(actualizarEstadoTemporal, 15000);
         document.onvisibilitychange = () => { if (!document.hidden) actualizarEstadoTemporal(); };
@@ -37,8 +40,46 @@ async function iniciarAplicacion() {
     } catch (error) {
         console.error(error);
         mostrarError(error);
+    } finally {
+        cargaCompletada = true;
+        finalizarEstadoCarga();
     }
 }
+
+function mostrarEstadoCarga(nombre = "") {
+    document.documentElement.dataset.estado = "cargando";
+    document.getElementById("estadoCarga").hidden = false;
+    document.getElementById("textoCarga").textContent = nombre ? `Cargando ${nombre}…` : "Cargando programa…";
+    const aplicacion = document.getElementById("aplicacion");
+    aplicacion.setAttribute("aria-busy", "true");
+    aplicacion.inert = true;
+}
+
+function finalizarEstadoCarga() {
+    document.documentElement.dataset.estado = programa ? "listo" : "error";
+    document.getElementById("estadoCarga").hidden = true;
+    const aplicacion = document.getElementById("aplicacion");
+    aplicacion.setAttribute("aria-busy", "false");
+    aplicacion.inert = false;
+}
+
+async function esperarTipografia() {
+    if (!document.fonts?.load) return;
+    let limite;
+    try {
+        await Promise.race([
+            Promise.all([document.fonts.load('500 16px Montserrat'), document.fonts.load('700 16px Montserrat')]),
+            new Promise(resolve => { limite = setTimeout(resolve, 1800); })
+        ]);
+    } catch { /* Se usa la tipografía del sistema si no hay conexión. */ }
+    finally { clearTimeout(limite); }
+}
+
+window.addEventListener("pageshow", event => {
+    // Al volver atrás, el navegador puede restaurar una página con la capa
+    // que se mostró justo antes de cambiar de programa.
+    if (event.persisted && cargaCompletada) finalizarEstadoCarga();
+});
 
 function obtenerSiguienteActo(ahora = new Date()) {
     let siguiente = null;
@@ -106,6 +147,12 @@ function mostrarError(error) {
     clearInterval(temporizador);
     document.title = "No se ha podido cargar el programa";
     document.getElementById("tituloWeb").textContent = "No se ha podido cargar el programa";
+    document.getElementById("hero").hidden = true;
+    document.querySelector(".barraSuperior").hidden = true;
+    document.getElementById("menu").hidden = true;
+    document.querySelector(".contenedor").style.display = "block";
+    document.getElementById("menu").hidden = true;
+    document.querySelector(".contenedor").style.display = "block";
     document.getElementById("contadorActo").textContent = "Puedes reintentar o seleccionar otro programa.";
     document.getElementById("buscador").disabled = true;
     document.getElementById("botonFavoritos").disabled = true;
