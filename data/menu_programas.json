@@ -16,7 +16,7 @@
       "anio": 2026,
       "archivo": "data/programa_iglesuela_26.json",
       "icono": "img/icon-iglesuela.png",
-      "activo": false
+      "activo": true
     },
     {
       "id": "castellfort-2026",
