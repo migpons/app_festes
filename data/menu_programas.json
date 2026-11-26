@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "programaPredeterminado": "vilafranca-2026",
+  "programaPredeterminado": "vilafranca-2027",
   "programas": [
     {
-      "id": "vilafranca-2026",
+      "id": "vilafranca-2027",
       "nombre": "Villafranca del Cid",
-      "anio": 2026,
-      "archivo": "data/programa_vilafranca_26.json",
+      "anio": 2027,
+      "archivo": "data/programa_vilafranca_27.json",
       "icono": "img/icon-vilafranca.png",
       "activo": true
     },
@@ -16,7 +16,7 @@
       "anio": 2026,
       "archivo": "data/programa_iglesuela_26.json",
       "icono": "img/icon-iglesuela.png",
-      "activo": true
+      "activo": false
     },
     {
       "id": "castellfort-2026",
@@ -24,7 +24,7 @@
       "anio": 2026,
       "archivo": "data/programa_castellfort_26.json",
       "icono": "img/icon-castellfort.png",
-      "activo": true
+      "activo": false
     },
     {
       "id": "4",
