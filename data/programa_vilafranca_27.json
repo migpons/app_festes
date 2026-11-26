@@ -10,7 +10,7 @@
       "pais": "España",
 	  "horaCambioDia":"06:00",
       "web": "",
-      "facebook": "https://www.facebook.com/comissioVilafranca2025",
+      "facebook": "https://www.facebook.com/comissioVilafranca",
       "instagram": "https://www.instagram.com/comissio_vilafranca/",
       "youtube": ""
     },
@@ -39,7 +39,7 @@
     "margenInferior":20
 	},
 		
-    "portada": "img/BG_2027_2.jpg",
+    "portada": "img/BG_vilafranca_2027.jpg",
 	"favicon":"img/icon_festes.png",
     "copyright": "Miguel Pons"
   },
