@@ -39,6 +39,9 @@ function validarPrograma(datos = programa) {
     const idsDias = new Set();
     for (const dia of datos.dias) {
         if (dia.activo !== undefined && typeof dia.activo !== "boolean") throw new Error("El campo activo de un día debe ser true o false, sin comillas.");
+        // Un día oculto puede estar todavía en preparación, con datos del
+        // programa anterior. No debe impedir publicar los demás días.
+        if (dia.activo === false) continue;
         if (!dia.id || !fechaValida(dia.fecha) || !dia.titulo || !Array.isArray(dia.actos) || fechas.has(dia.fecha) || idsDias.has(String(dia.id))) {
             throw new Error("Hay un día incompleto, duplicado o con una fecha incorrecta.");
         }
@@ -57,7 +60,7 @@ function validarPrograma(datos = programa) {
         }
     }
     for (const campo of ["fechaInicio", "fechaFin"]) if (!fechaValida(config[campo])) throw new Error(`La fecha ${campo} no es válida.`);
-    if (config.fechaInicio > config.fechaFin || datos.dias.some(d => d.fecha < config.fechaInicio || d.fecha > config.fechaFin)) throw new Error("Los días no coinciden con el intervalo de fechas del programa.");
+    if (config.fechaInicio > config.fechaFin || datos.dias.some(d => d.activo !== false && (d.fecha < config.fechaInicio || d.fecha > config.fechaFin))) throw new Error("Los días no coinciden con el intervalo de fechas del programa.");
 }
 
 function obtenerDia(indice) { return programa.dias[indice]; }
