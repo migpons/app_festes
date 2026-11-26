@@ -10,18 +10,18 @@
       "pais": "España",
 	  "horaCambioDia":"06:00",
       "web": "",
-      "facebook": "https://www.facebook.com/comissioVilafranca",
+      "facebook": "https://www.facebook.com/comissioVilafranca2025",
       "instagram": "https://www.instagram.com/comissio_vilafranca/",
       "youtube": ""
     },
     "anio": 2027,
     "duracion": 10,
-    "fechaInicio": "2026-08-07",
-    "fechaFin": "2026-08-16",
+    "fechaInicio": "2027-08-07",
+    "fechaFin": "2027-08-16",
 		
 	"logo":{
 
-    "archivo":"img/logo_2026.png",
+    "archivo":"img/logo_2027.png",
 
     "pc":{
         "ancho":600,
@@ -39,18 +39,18 @@
     "margenInferior":20
 	},
 		
-    "portada": "img/BG_2026_2.jpg",
+    "portada": "img/BG_2027_2.jpg",
 	"favicon":"img/icon_festes.png",
     "copyright": "Miguel Pons"
   },
 
   "tema": {
     "principal": "#4d0b2f",
-    "secundario": "#f2a474",
+    "secundario": "#fdefd5",
     "fondo": "#feecde",
 	"texto": "#222222",
     "tarjeta": "#FFFFFF",
-	"navegador": "#993a58"
+	"navegador": "#e15b56"
   },
 
   "categorias": [
@@ -69,6 +69,7 @@
   "dias": [
     {
       "id": 1,
+      "activo": false,
       "fecha": "2026-08-07",
       "titulo": "🗓️ Viernes 07 de Agosto",
       "descripcion": "Inicio de las Fiestas Patronales",
@@ -205,6 +206,7 @@
 
     {
       "id": 2,
+      "activo": false,
       "fecha": "2026-08-08",
       "titulo": "🗓️ Sábado 08 de Agosto",
       "descripcion": "",
@@ -448,6 +450,7 @@
     },
     {
       "id": 3,
+      "activo": false,
       "fecha": "2026-08-09",
       "titulo": "🗓️ Domingo 09 de Agosto",
       "descripcion": "",
@@ -565,6 +568,7 @@
     },
     {
       "id": 4,
+      "activo": false,
       "fecha": "2026-08-10",
       "titulo": "🗓️ Lunes 10 de Agosto",
       "descripcion": "Día de peñas",
@@ -664,6 +668,7 @@
     },
     {
       "id": 5,
+      "activo": false,
       "fecha": "2026-08-11",
       "titulo": "🗓️ Martes 11 de Agosto",
       "descripcion": "Día de Kintos",
@@ -781,6 +786,7 @@
     },
     {
       "id": 6,
+      "activo": false,
       "fecha": "2026-08-12",
       "titulo": "🗓️ Miércoles 12 de Agosto",
       "descripcion": "Día de los niños",
@@ -988,6 +994,7 @@
     },
     {
       "id": 7,
+      "activo": false,
       "fecha": "2026-08-13",
       "titulo": "🗓️ Jueves 13 de Agosto",
       "descripcion": "Día de la gente mayor",
@@ -1195,6 +1202,7 @@
     },
     {
       "id": 8,
+      "activo": false,
       "fecha": "2026-08-14",
       "titulo": "🗓️ Viernes 14 de Agosto",
       "descripcion": "",
@@ -1348,6 +1356,7 @@
     },
     {
       "id": 9,
+      "activo": false,
       "fecha": "2026-08-15",
       "titulo": "🗓️ Sábado 15 de Agosto",
       "descripcion": "Día de la Virgen",
@@ -1555,6 +1564,7 @@
     },
     {
       "id": 10,
+      "activo": false,
       "fecha": "2026-08-16",
       "titulo": "🗓️ Domingo 16 de Agosto",
       "descripcion": "Día de San Roque",
