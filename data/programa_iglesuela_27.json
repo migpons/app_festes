@@ -50,12 +50,12 @@
   },
 
   "tema": {
-    "principal": "#506a8f",
-    "secundario": "#465e78",
+    "principal": "#442470",
+    "secundario": "#d8cce0",
     "fondo": "#c5d3e0",
 	"texto": "#222222",
     "tarjeta": "#FFFFFF",
-	"navegador": "#506a8f"
+	"navegador": "#442470"
   },
 
   "categorias": [
