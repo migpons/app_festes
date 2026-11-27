@@ -1,10 +1,10 @@
 {
   "config": {
     "version": "1.0",
-    "titulo": "Fiestas Patronales en Honor a San Roque",
+    "titulo": "",
 	"tituloPagina":"Festes Vilafranca 2027",
     "municipio": {
-      "nombre": "Villafranca del Cid",
+      "nombre": "",
       "provincia": "Castellón",
       "comunidad": "Comunidad Valenciana",
       "pais": "España",
