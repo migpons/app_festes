@@ -1,6 +1,11 @@
 {
   "config": {
     "version": "1.0",
+    "banner": {
+      "mostrarTextos": true,
+      "mostrarLogo": true,
+      "soloImagen": false
+    },
     "titulo": "Fiestas Patronales Castellfort",
 	"tituloPagina":"Festes Castellfort 2026",
     "municipio": {
