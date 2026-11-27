@@ -1,6 +1,11 @@
 {
   "config": {
     "version": "1.0",
+    "banner": {
+      "mostrarTextos": true,
+      "mostrarLogo": true,
+      "soloImagen": false
+    },
     "titulo": "Fiestas en Honor a la Virgen del Cid",
 	"tituloPagina":"Fiestas Iglesuela 2026",
     "municipio": {
