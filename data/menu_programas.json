@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "programaPredeterminado": "vilafranca-2027",
+  "programaPredeterminado": "vilafranca-2026",
   "programas": [
     {
       "id": "vilafranca-2027",
@@ -11,10 +11,10 @@
       "activo": true
     },
     {
-      "id": "iglesuela-2026",
+      "id": "iglesuela-2027",
       "nombre": "Iglesuela del Cid",
-      "anio": 2026,
-      "archivo": "data/programa_iglesuela_26.json",
+      "anio": 2027,
+      "archivo": "data/programa_iglesuela_27.json",
       "icono": "img/icon-iglesuela.png",
       "activo": true
     },
