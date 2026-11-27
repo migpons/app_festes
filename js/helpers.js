@@ -129,28 +129,47 @@ function cargarImagenCabecera(imagen, ruta) {
         imagen.src = ruta;
     });
 }
+function obtenerOpcionesBanner(config = programa.config) {
+    const banner = config.banner || {};
+    return {
+        textos: banner.soloImagen !== true && banner.mostrarTextos !== false,
+        logo: banner.soloImagen !== true && banner.mostrarLogo !== false,
+        soloImagen: banner.soloImagen === true
+    };
+}
 async function aplicarImagenes() {
-    document.title = programa.config.tituloPagina || programa.config.titulo;
+    const opciones = obtenerOpcionesBanner();
+    const configLogo = programa.config.logo || {};
+    const municipio = programa.config.municipio?.nombre || obtenerProgramaSeleccionadoInfo()?.nombre || "Programa de fiestas";
+    document.title = programa.config.tituloPagina || programa.config.titulo || `${municipio} ${programa.config.anio}`;
     const logo = $("#logo");
     logo.hidden = true;
-    logo.alt = `Fiestas de ${programa.config.municipio.nombre} ${programa.config.anio}`;
+    logo.alt = `Fiestas de ${municipio} ${programa.config.anio}`;
     for (const tamano of ["pc", "tablet", "movil"]) {
-        document.documentElement.style.setProperty(`--logo-${tamano}`, programa.config.logo[tamano].ancho + "px");
+        document.documentElement.style.setProperty(`--logo-${tamano}`, (configLogo[tamano]?.ancho || {pc: 320, tablet: 260, movil: 200}[tamano]) + "px");
     }
-    logo.style.marginTop = (programa.config.logo.margenSuperior ?? 0) + "px";
-    logo.style.marginBottom = (programa.config.logo.margenInferior ?? 0) + "px";
+    logo.style.marginTop = (configLogo.margenSuperior ?? 0) + "px";
+    logo.style.marginBottom = (configLogo.margenInferior ?? 0) + "px";
     $("#favicon").href = urlSegura(programa.config.favicon || "img/icon_festes.png", true);
     const portada = urlSegura(programa.config.portada, true);
     const [logoListo, portadaLista] = await Promise.all([
-        cargarImagenCabecera(logo, urlSegura(programa.config.logo.archivo, true)),
+        cargarImagenCabecera(logo, opciones.logo ? urlSegura(configLogo.archivo, true) : ""),
         cargarImagenCabecera(new Image(), portada)
     ]);
     logo.hidden = !logoListo;
+    if (!logoListo) logo.removeAttribute("src");
+    document.querySelector(".hero-overlay").style.background = opciones.soloImagen ? "none" : "";
     $("#hero").style.backgroundImage = portadaLista ? `url(${JSON.stringify(portada)})` : "none";
 }
 function cargarCabecera() {
-    $("#tituloWeb").textContent = programa.config.titulo;
-    $("#subtituloWeb").textContent = programa.config.municipio.nombre;
+    const opciones = obtenerOpcionesBanner();
+    const titulo = programa.config.titulo || "";
+    const municipio = programa.config.municipio?.nombre || "";
+    $("#tituloWeb").textContent = titulo;
+    $("#subtituloWeb").textContent = municipio;
+    $("#tituloWeb").hidden = !opciones.textos || !titulo.trim();
+    $("#subtituloWeb").hidden = !opciones.textos || !municipio.trim();
+    document.querySelector(".titulos").hidden = !opciones.textos || (!titulo.trim() && !municipio.trim());
     $("#anioFiestas").textContent = programa.config.anio;
     $("#copyright").textContent = "© " + (programa.config.copyright || "");
 }

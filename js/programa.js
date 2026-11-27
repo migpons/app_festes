@@ -15,9 +15,14 @@ async function cargarPrograma(ruta) {
 function validarPrograma(datos = programa) {
     if (!datos || !datos.config || !datos.tema) throw new Error("El programa necesita los bloques config y tema.");
     const config = datos.config;
-    if (!config.titulo || !config.municipio?.nombre || !config.logo?.archivo ||
-        !config.logo.pc?.ancho || !config.logo.tablet?.ancho || !config.logo.movil?.ancho) {
-        throw new Error("La cabecera o el logotipo del programa están incompletos.");
+    // Los textos y el logotipo son elementos opcionales de presentación.
+    for (const campo of ["titulo", "tituloPagina"]) {
+        if (config[campo] !== undefined && typeof config[campo] !== "string") throw new Error(`El campo ${campo} debe ser texto.`);
+    }
+    if (config.municipio?.nombre !== undefined && typeof config.municipio.nombre !== "string") throw new Error("El nombre del municipio debe ser texto.");
+    if (config.banner !== undefined && (!config.banner || typeof config.banner !== "object" || Array.isArray(config.banner))) throw new Error("El bloque banner debe ser un objeto.");
+    for (const campo of ["mostrarTextos", "mostrarLogo", "soloImagen"]) {
+        if (config.banner?.[campo] !== undefined && typeof config.banner[campo] !== "boolean") throw new Error(`El campo banner.${campo} debe ser true o false, sin comillas.`);
     }
     if (!Number.isInteger(config.anio)) throw new Error("El año del programa no es válido.");
     for (const campo of ["principal", "secundario", "fondo", "texto", "tarjeta"]) {
@@ -25,7 +30,7 @@ function validarPrograma(datos = programa) {
             throw new Error(`El color ${campo} del tema no es válido.`);
         }
     }
-    const cambio = config.horaCambioDia ?? config.municipio.horaCambioDia ?? "06:00";
+    const cambio = config.horaCambioDia ?? config.municipio?.horaCambioDia ?? "06:00";
     if (horaMinutos(cambio) === null) throw new Error("La hora de cambio de día no es válida.");
     if (!Array.isArray(datos.categorias) || !Array.isArray(datos.dias)) throw new Error("Las categorías y los días deben ser listas.");
     const categorias = new Set();
