@@ -4,7 +4,7 @@
     "banner": {
       "mostrarTextos": true,
       "mostrarLogo": true,
-      "soloImagen": false
+      "soloImagen": true
     },
     "titulo": "Fiestas en Honor a la Virgen del Cid",
 	"tituloPagina":"Fiestas Iglesuela 2027",
