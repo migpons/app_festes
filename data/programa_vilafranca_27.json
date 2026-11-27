@@ -4,7 +4,7 @@
     "banner": {
       "mostrarTextos": false,
       "mostrarLogo": true,
-      "soloImagen": false
+      "soloImagen": true
     },
     "titulo": "Festes en honor a Sant Roc",
 	"tituloPagina":"Festes Vilafranca 2027",
