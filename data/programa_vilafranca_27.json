@@ -1,10 +1,10 @@
 {
   "config": {
     "version": "1.0",
-    "titulo": "Festes Vilafranca",
+    "titulo": "Festes en honor a Sant Roc",
 	"tituloPagina":"Festes Vilafranca 2027",
     "municipio": {
-      "nombre": "",
+      "nombre": "Vilafranca",
       "provincia": "Castellón",
       "comunidad": "Comunidad Valenciana",
       "pais": "España",
